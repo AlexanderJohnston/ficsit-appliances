@@ -101,10 +101,6 @@ function Deps:require(input, input_version)
     local libname, version, url, cachepath = self:resolve(input, input_version)
     if Deps.cache[cachepath] == nil then
         self:ensure_downloaded(input, version)
-        print(1, cachepath)
-        print(2, filesystem.doFile)
-        print(3, type(filesystem.doFile))
-        print(4, filesystem.doFile(cachepath))
         Deps.cache[cachepath] = filesystem.doFile(cachepath)
     end
     return Deps.cache[cachepath]
