@@ -11,8 +11,23 @@ local function pci(cls)
 end
 
 local function mkdir_p(dir)
-    if not filesystem.isDir(dir) and not filesystem.createDir(dir) then
-        computer.panic("[Deps] Cannot create directory " .. dir)
+    local path = ""
+
+    local parts = {}
+    for part in string.gmatch(dir, "[^/]+") do
+        table.insert(parts, part)
+    end
+    table.remove(parts, #parts)
+
+    for _, part in pairs(parts) do
+        path = path .. "/" .. part
+        if not filesystem.isDir(path) then
+            if filesystem.createDir(path) then
+                print("[Deps] Created directory " .. dir)
+            else
+                computer.panic("[Deps] Cannot create directory " .. dir)
+            end
+        end
     end
 end
 
