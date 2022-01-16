@@ -3,7 +3,7 @@ function bootstrap_deps()
     local req = internet:request("https://raw.githubusercontent.com/abesto/ficsit-appliances/master/lib/deps.lua",
         "GET", "", "User-Agent", "Ficsit-Appliances/Bootstrap https://github.com/abesto/ficsit-appliances")
     local _, Deps_source = req:await()
-    return loadstring(Deps_source)()
+    return load(Deps_source)
 end
 
 Deps = bootstrap_deps()

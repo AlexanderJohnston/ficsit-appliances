@@ -91,3 +91,5 @@ function Deps:require(input, version)
         return Deps[libname].module
     end
 end
+
+return Deps
