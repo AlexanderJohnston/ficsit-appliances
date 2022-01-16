@@ -101,16 +101,16 @@ function Deps:require(input, input_version)
     local libname, version, url, cachepath = self:resolve(input, input_version)
     if Deps.cache[libname] == nil then
         self:ensure_downloaded(input, version)
-        Deps.cache[libname] = {
-            version = version,
-            module = filesystem.doFile(cachepath)
-        }
     elseif Deps[libname].version ~= version then
         computer.panic("[Deps] " .. libname .. " is already loaded with version " .. Deps[libname] ..
                            " and cannot be loaded with version " .. version)
     else
         computer.print("[Deps] " .. libname .. " is already loaded with version " .. version)
     end
+    Deps.cache[libname] = {
+        version = version,
+        module = filesystem.doFile(cachepath)
+    }
     return Deps.cache[libname].module
 end
 
