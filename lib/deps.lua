@@ -48,6 +48,8 @@ function Deps:download(url, path)
     local req = self.internet:request(url, "GET", "", "User-Agent", USER_AGENT)
     local _, content = req:await()
     local file = filesystem.open(path, "w")
+    print(content)
+    print(file, path)
     file:write(content)
     file:close()
 end
