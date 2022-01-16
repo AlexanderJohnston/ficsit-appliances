@@ -35,10 +35,10 @@ function _bootstrap()
     -- Fetch deps.lua if needed
     local path = "/deps-" .. DEPS_COMMIT .. ".lua"
     if not filesystem.exists(path) then
-        local url = "https://raw.githubusercontent.com/" .. BOOTSTRAP_REPO .. "/" .. BOOTSTRAP_COMMIT .. "/lib/deps.lua"
+        local url = "https://raw.githubusercontent.com/" .. BOOTSTRAP_REPO .. "/" .. DEPS_COMMIT .. "/lib/deps.lua"
         local internet = computer.getPCIDevices(findClass("FINInternetCard"))[1]
-        local req = internet:request("GET", url, "User-Agent", "Ficsit-Appliances/Bootstrap https://github.com/" ..
-            BOOTSTRAP_REPO .. "@" .. BOOTSTRAP_COMMIT)
+        local req = internet:request(url, "GET", "", "User-Agent", "Ficsit-Appliances/Bootstrap https://github.com/" ..
+            BOOTSTRAP_REPO .. "@" .. DEPS_COMMIT)
         local _, Deps_source = req:await()
         local file = filesystem.open(path, "w")
         file:write(Deps_source)
