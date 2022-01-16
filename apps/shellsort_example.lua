@@ -1,3 +1,4 @@
+print("hi", Deps)
 shellsort = Deps("third_party/shellsort", "main")
 
 function main()
