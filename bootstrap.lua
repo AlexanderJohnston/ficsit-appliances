@@ -1,4 +1,4 @@
-BOOTSTRAP_APP = {"apps/shellsort_example", "1767520"} -- Update this for the location / commit of the app you want to run on this computer
+BOOTSTRAP_APP = {"apps/shellsort_example", "7fd3600"} -- Update this for the location / commit of the app you want to run on this computer
 DEPS_DISK_UUID = nil -- Replace this with the disk UUID to use for the dependency cache if you have more than one disks in the system
 BOOTSTRAP_REPO = "abesto/ficsit-appliances"
 DEPS_COMMIT = "1767520"
@@ -48,7 +48,10 @@ function _bootstrap()
     Deps = filesystem.doFile(path)
 
     -- Run the app
-    local app = Deps(table.unpack(BOOTSTRAP_APP))
+    local target, version = table.unpack(BOOTSTRAP_APP)
+    print("[bootstrap] Loading: " .. target .. " @ " .. version)
+    local app = Deps(target, version)
+    print("[bootstrap] Starting: " .. target .. " @ " .. version)
     app()
 end
 _bootstrap()

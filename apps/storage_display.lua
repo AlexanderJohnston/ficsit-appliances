@@ -379,4 +379,4 @@ function main()
     end
 end
 
-main()
+return main
