@@ -111,7 +111,7 @@ function Deps:require(input, version)
     else
         computer.print("[Deps] " .. libname .. " is already loaded with version " .. version)
     end
-    return Deps[libname].module
+    return Deps.cache[libname].module
 end
 
 Deps.default = Deps:new()
