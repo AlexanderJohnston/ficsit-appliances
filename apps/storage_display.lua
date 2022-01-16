@@ -13,75 +13,7 @@ GREEN = {0, 1, 0, 1}
 RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
 
--- shellsort from http://lua-users.org/wiki/LuaSorting
--- calling table.sort sometimes explodes saying "attempt to yield across a C-call boundary",
--- so let's sort in Lua
-local incs = {1391376, 463792, 198768, 86961, 33936, 13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1}
-
-local function _ssup(t, n)
-    for _, h in ipairs(incs) do
-        for i = h + 1, n do
-            local v = t[i]
-            for j = i - h, 1, -h do
-                local testval = t[j]
-                if not (v < testval) then
-                    break
-                end
-                t[i] = testval;
-                i = j
-            end
-            t[i] = v
-        end
-    end
-    return t
-end
-
-local function _ssdown(t, n)
-    for _, h in ipairs(incs) do
-        for i = h + 1, n do
-            local v = t[i]
-            for j = i - h, 1, -h do
-                local testval = t[j]
-                if not (v > testval) then
-                    break
-                end
-                t[i] = testval;
-                i = j
-            end
-            t[i] = v
-        end
-    end
-    return t
-end
-
-local function _ssgeneral(t, n, before)
-    for _, h in ipairs(incs) do
-        for i = h + 1, n do
-            local v = t[i]
-            for j = i - h, 1, -h do
-                local testval = t[j]
-                if not before(v, testval) then
-                    break
-                end
-                t[i] = testval;
-                i = j
-            end
-            t[i] = v
-        end
-    end
-    return t
-end
-
-function shellsort(t, before, n)
-    n = n or #t
-    if not before or before == "<" then
-        return _ssup(t, n)
-    elseif before == ">" then
-        return _ssdown(t, n)
-    else
-        return _ssgeneral(t, n, before)
-    end
-end
+shellsort = Deps("third_party/shellsort", "44c49ce")
 
 DB = {}
 DB.__index = DB
