@@ -67,3 +67,5 @@ function shellsort(t, before, n)
         return ssgeneral(t, n, before)
     end
 end
+
+return shellsort

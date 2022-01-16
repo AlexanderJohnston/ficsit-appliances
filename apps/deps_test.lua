@@ -27,9 +27,7 @@ function bootstrap_deps(main_disk_uuid)
 end
 
 Deps = bootstrap_deps()
-deps = Deps:new()
-
-shellsort = deps:require("third_party/shellsort", "main")
+shellsort = Deps:require("third_party/shellsort", "main")
 
 local t = {3, 2, 1}
 shellsort(t)

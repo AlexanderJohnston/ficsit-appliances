@@ -103,7 +103,7 @@ function Deps:require(input, version)
         self:ensure_downloaded(input, version)
         Deps.cache[libname] = {
             version = version,
-            module = filesystem.doPath(cachepath)
+            module = filesystem.doFile(cachepath)
         }
     elseif Deps[libname].version ~= version then
         computer.panic("[Deps] " .. libname .. " is already loaded with version " .. Deps[libname] ..
@@ -115,8 +115,8 @@ function Deps:require(input, version)
 end
 
 Deps.default = Deps:new()
-Deps.require = function(...)
-    return Deps.default:require(...)
+function Deps:require(...)
+    return self.default:require(...)
 end
 
 return Deps
