@@ -1,8 +1,10 @@
-fs = filesystem
+fs = Deps("lib/fs", "main")
+time = Deps("lib/time", "main")
+shellsort = Deps("third_party/shellsort", "44c49ce")
+hw = Deps("lib/hw", "main")
 
 CONFIG = {
-    main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
-    disk = "12A8BE0A4A8F410EBEAEDCB68E6A8392"
+    main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17"
 }
 
 BLACK = {0, 0, 0, 1}
@@ -12,8 +14,6 @@ GRAY50 = {0.5, 0.5, 0.5, 1}
 GREEN = {0, 1, 0, 1}
 RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
-
-shellsort = Deps("third_party/shellsort", "44c49ce")
 
 DB = {}
 DB.__index = DB
@@ -121,7 +121,7 @@ HistoryEntry.__index = HistoryEntry
 function HistoryEntry:new(db, duration)
     local o = {
         db = db,
-        time = computer.seconds(),
+        time = time.real_seconds_save_age(),
         duration = duration
     }
     setmetatable(o, self)
@@ -129,7 +129,7 @@ function HistoryEntry:new(db, duration)
 end
 
 function HistoryEntry:age()
-    return math.floor(computer.seconds() - self.time)
+    return math.floor(time.real_seconds_save_age() - self.time)
 end
 
 function count_items(db, container)
@@ -330,7 +330,7 @@ end
 
 function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
-    local gpu = computer.getPCIDevices(findClass("GPU_T1_C"))[1]
+    local gpu = hw.gpu()
     local main_display = component.proxy(CONFIG.main_display)
     local history = History:new(900, 5)
     local status = "Startup"
