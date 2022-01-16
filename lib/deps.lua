@@ -70,7 +70,8 @@ end
 function Deps:ensure_downloaded(input, version)
     local libname, url, cachepath = self:resolve(input, version)
     if version == "main" or not filesystem.exists(cachepath) then
-        print("[Deps] Downloading " .. libname .. " version " .. version .. " from " .. url .. " to " .. cachepath)
+        print("[Deps] Downloading " .. libname .. "\n       version " .. version .. "\n       from " .. url ..
+                  "\n       to " .. cachepath)
         self:download(url, cachepath)
     else
         print("[Deps] Cache hit: " .. libname .. " version " .. version .. " at " .. cachepath)
