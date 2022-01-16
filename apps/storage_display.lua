@@ -1,5 +1,5 @@
 fs = Deps("lib/fs", "main")
-time = Deps("lib/time", "main")
+time = Deps("lib/time", "4276d56")
 shellsort = Deps("third_party/shellsort", "44c49ce")
 hw = Deps("lib/hw", "main")
 
