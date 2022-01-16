@@ -23,7 +23,7 @@ end
 
 function Deps:download(url, path)
     --- Downloads a file to disk. url must be a full URL, and path an absolute path.
-    local req = card:request(url, "GET", "", "User-Agent", USER_AGENT)
+    local req = self.internet:request(url, "GET", "", "User-Agent", USER_AGENT)
     local _, content = req:await()
 
     local file = filesystem.open(path, "w")
