@@ -12,15 +12,14 @@ end
 --    A game day consists of 24 game hours, a game hour consists of 60 game minutes, a game minute consists of 60 game seconds.
 -- https://satisfactory.fandom.com/wiki/World says
 --    One day on Massage-2(A-B)b lasts for 50 real-world minutes
--- So 1 $UNIT in-game is this many $UNITs in real life
-local GAME_TO_REAL = 60 * 60 * 24 / 50
+local REAL_TO_GAME = 60 * 60 * 24 / 50
 
 function time.game_to_real(duration)
-    return duration * GAME_TO_REAL
+    return duration / REAL_TO_GAME
 end
 
 function time.real_to_game(duration)
-    return duration / GAME_TO_REAL
+    return duration * REAL_TO_GAME
 end
 
 function time.game_seconds_save_age()
