@@ -28,7 +28,7 @@ end
 
 Deps = bootstrap_deps()
 deps = Deps:new()
-shellsort = deps:require("shellsort", "main")
+shellsort = deps:require("third_party/shellsort")
 
 local t = {3, 2, 1}
 shellsort(t)

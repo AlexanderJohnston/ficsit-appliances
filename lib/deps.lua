@@ -82,7 +82,7 @@ end
 function Deps:require(input, version)
     local libname, url, cachepath = self:resolve(input, version)
     if Deps.cache[libname] == nil then
-        self:ensure_downloaded(libname, url, cachepath)
+        self:ensure_downloaded(input, version)
         Deps.cache[libname] = {
             version = version,
             module = filesystem.doPath(cachepath)
