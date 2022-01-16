@@ -71,17 +71,22 @@ function Deps:resolve(input, version)
     if string.match(input, "^https?://") then
         local _, libname = string.match(input, "^(https?://[^/]+)/(.*)$")
         url = input
-    elseif string.match(input, "^([^:]+):(.*)$") then
-        local repo, path = string.match(input, "^([^:]+):(.*)$")
-        libname = input
-        url = "https://raw.githubusercontent.com/" .. repo .. "/" .. version .. "/" .. path
     else
-        url = "https://raw.githubusercontent.com/" .. REPOSITORY .. "/" .. version .. "/" .. input
-        libname = REPOSITORY .. ":" .. input
+        local repo, path
+        if string.match(input, "^([^:]+):(.*)$") then
+            repo, path = string.match(input, "^([^:]+):(.*)$")
+        else
+            repo, path = REPOSITORY, input
+        end
+        libname = repo .. ":" .. input
+        url = "https://raw.githubusercontent.com/" .. repo .. "/" .. version .. "/" .. path .. ".lua"
     end
 
     cachepath = self.cachedir .. "/" .. libname .. "-" .. version
     cachepath = string.gsub(cachepath, ":", "/")
+    if not string.match(cachepath, "\.lua$") then
+        cachepath = cachepath .. ".lua"
+    end
 
     return libname, url, cachepath
 end
