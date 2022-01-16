@@ -12,14 +12,7 @@ end
 
 local function mkdir_p(dir)
     local path = ""
-
-    local parts = {}
     for part in string.gmatch(dir, "[^/]+") do
-        table.insert(parts, part)
-    end
-    table.remove(parts, #parts)
-
-    for _, part in pairs(parts) do
         path = path .. "/" .. part
         if not filesystem.isDir(path) then
             if filesystem.createDir(path) then
@@ -29,8 +22,6 @@ local function mkdir_p(dir)
             end
         end
     end
-    print(dir)
-    print(filesystem.isDir(dir))
 end
 
 local Deps = {
@@ -121,6 +112,11 @@ function Deps:require(input, version)
         computer.print("[Deps] " .. libname .. " is already loaded with version " .. version)
         return Deps[libname].module
     end
+end
+
+Deps.default = Deps:new()
+Deps.require = function(...)
+    return Deps.default:require(...)
 end
 
 return Deps
