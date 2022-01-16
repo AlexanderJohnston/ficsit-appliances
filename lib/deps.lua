@@ -29,6 +29,8 @@ local function mkdir_p(dir)
             end
         end
     end
+    print(dir)
+    print(filesystem.isDir(dir))
 end
 
 local Deps = {
@@ -45,11 +47,9 @@ end
 
 function Deps:download(url, path)
     --- Downloads a file to disk. url must be a full URL, and path an absolute path.
-    print(url, path)
     local req = self.internet:request(url, "GET", "", "User-Agent", USER_AGENT)
     local _, content = req:await()
     local file = filesystem.open(path, "w")
-    print("whee", file)
     file:write(content)
     file:close()
 end
