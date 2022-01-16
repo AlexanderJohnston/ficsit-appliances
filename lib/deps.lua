@@ -115,8 +115,10 @@ function Deps:require(input, version)
 end
 
 Deps.default = Deps:new()
-function Deps:require(...)
-    return self.default:require(...)
-end
+setmetatable(Deps, {
+    __call = function(self, ...)
+        return self.default:require(...)
+    end
+})
 
 return Deps
