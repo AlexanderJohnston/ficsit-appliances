@@ -18,7 +18,7 @@ function Deps:new(cachedir)
     local self = setmetatable({}, Deps)
     self.internet = pci("FINInternetCard")
     self.cachedir = cachedir or "/deps_cache"
-    if not filesystem.isDir(self.cachedir) and not filesystem.makeDir(self.cachedir) then
+    if not filesystem.isDir(self.cachedir) and not filesystem.createDir(self.cachedir) then
         computer.panic("Cannot create cache directory " .. self.cachedir)
     end
     return self
