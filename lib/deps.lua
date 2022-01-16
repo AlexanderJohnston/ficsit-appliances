@@ -10,6 +10,12 @@ local function pci(cls)
     return device
 end
 
+local function mkdir_p(dir)
+    if not filesystem.isDir(dir) and not filesystem.createDir(dir) then
+        computer.panic("[Deps] Cannot create directory " .. dir)
+    end
+end
+
 local Deps = {
     cache = {}
 }
@@ -18,9 +24,7 @@ function Deps:new(cachedir)
     local self = setmetatable({}, Deps)
     self.internet = pci("FINInternetCard")
     self.cachedir = cachedir or "/deps_cache"
-    if not filesystem.isDir(self.cachedir) and not filesystem.createDir(self.cachedir) then
-        computer.panic("Cannot create cache directory " .. self.cachedir)
-    end
+    mkdir_p(self.cachedir)
     return self
 end
 
@@ -28,7 +32,6 @@ function Deps:download(url, path)
     --- Downloads a file to disk. url must be a full URL, and path an absolute path.
     local req = self.internet:request(url, "GET", "", "User-Agent", USER_AGENT)
     local _, content = req:await()
-
     local file = filesystem.open(path, "w")
     file:write(content)
     file:close()
@@ -63,6 +66,7 @@ function Deps:resolve(input, version)
     end
 
     cachepath = self.cachedir .. "/" .. libname .. "-" .. version
+    cachepath = string.gsub(cachepath, ":", "/")
 
     return libname, url, cachepath
 end
@@ -72,6 +76,7 @@ function Deps:ensure_downloaded(input, version)
     if version == "main" or not filesystem.exists(cachepath) then
         print("[Deps] Downloading " .. libname .. "\n       version " .. version .. "\n       from " .. url ..
                   "\n       to " .. cachepath)
+        mkdir_p(string.gsub(cachepath, "/[^/]+$", ""))
         self:download(url, cachepath)
     else
         print("[Deps] Cache hit: " .. libname .. " version " .. version .. " at " .. cachepath)
