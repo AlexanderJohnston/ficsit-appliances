@@ -1,7 +1,7 @@
-BOOTSTRAP_APP = {"YOUR_APP_HERE", "main"}
+BOOTSTRAP_APP = {"shellsort_example", "3cbe6ad"} -- Update this for the location / commit of the app you want to run on this computer
 DEPS_DISK_UUID = nil -- Replace this with the disk UUID to use for the dependency cache if you have more than one disks in the system
 BOOTSTRAP_REPO = "abesto/ficsit-appliances"
-DEPS_COMMIT = "33e3f11"
+DEPS_COMMIT = "3cbe6ad"
 
 -- YOU SHOULD NOT HAVE TO EDIT ANYTHING BELOW THIS LINE --
 Deps = nil
