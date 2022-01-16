@@ -338,11 +338,6 @@ function main()
     gpu:bindScreen(main_display)
     event.listen(gpu)
 
-    -- Initialize /dev
-    if fs.initFileSystem("/dev") == false then
-        computer.panic("Cannot initialize /dev")
-    end
-
     local last_highlight = nil
     local last_time_to_next_snapshot = nil
     while true do
