@@ -1,4 +1,4 @@
-shellsort = Deps("third_party/shellsort", "main")
+shellsort = Deps("third_party/shellsort", "fd1ff9f")
 
 function main()
     local t = {3, 2, 1}
