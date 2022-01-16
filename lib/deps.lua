@@ -18,6 +18,9 @@ function Deps:new(cachedir)
     local self = setmetatable({}, Deps)
     self.internet = pci("FINInternetCard")
     self.cachedir = cachedir or "/deps_cache"
+    if not filesystem.isDir(self.cachedir) and not filesystem.makeDir(self.cachedir) then
+        computer.panic("Cannot create cache directory " .. self.cachedir)
+    end
     return self
 end
 
@@ -84,10 +87,10 @@ function Deps:require(input, version)
             module = filesystem.doPath(cachepath)
         }
     elseif Deps[libname].version ~= version then
-        panic("[Deps] " .. libname .. " is already loaded with version " .. Deps[libname] ..
-                  " and cannot be loaded with version " .. version)
+        computer.panic("[Deps] " .. libname .. " is already loaded with version " .. Deps[libname] ..
+                           " and cannot be loaded with version " .. version)
     else
-        print("[Deps] " .. libname .. " is already loaded with version " .. version)
+        computer.print("[Deps] " .. libname .. " is already loaded with version " .. version)
         return Deps[libname].module
     end
 end
