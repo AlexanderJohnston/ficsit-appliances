@@ -1,0 +1,54 @@
+BOOTSTRAP_APP = {"YOUR_APP_HERE", "main"}
+DEPS_DISK_UUID = nil -- Replace this with the disk UUID to use for the dependency cache if you have more than one disks in the system
+BOOTSTRAP_REPO = "abesto/ficsit-appliances"
+DEPS_COMMIT = "33e3f11"
+
+-- YOU SHOULD NOT HAVE TO EDIT ANYTHING BELOW THIS LINE --
+Deps = nil
+function _bootstrap()
+    -- Initialize FS
+    if filesystem.initFileSystem("/dev") == false then
+        computer.panic("Cannot initialize /dev")
+    end
+
+    -- Find the disk where we'll cache dependencies
+    if DEPS_DISK_UUID == nil then
+        local drives = filesystem.childs("/dev")
+        for idx, drive in pairs(drives) do
+            if drive == "serial" then
+                table.remove(drives, idx)
+            end
+        end
+        if #drives == 0 then
+            computer.panic("No drives found")
+        end
+        if #drives > 1 then
+            computer.panic("Multiple drives found")
+        end
+        DEPS_DISK_UUID = drives[1]
+    end
+
+    -- Mount the FS
+    filesystem.mount("/dev/" .. DEPS_DISK_UUID, "/")
+    print("[bootstrap] Mounted /dev/" .. DEPS_DISK_UUID .. " to /")
+
+    -- Fetch deps.lua if needed
+    local path = "/deps-" .. DEPS_COMMIT .. ".lua"
+    if not filesystem.exists(path) then
+        local url = "https://raw.githubusercontent.com/" .. BOOTSTRAP_REPO .. "/" .. BOOTSTRAP_COMMIT .. "/lib/deps.lua"
+        local internet = computer.getPCIDevices(findClass("FINInternetCard"))[1]
+        local req = internet:request("GET", url, "User-Agent", "Ficsit-Appliances/Bootstrap https://github.com/" ..
+            BOOTSTRAP_REPO .. "@" .. BOOTSTRAP_COMMIT)
+        local _, Deps_source = req:await()
+        local file = filesystem.open(path, "w")
+        file:write(Deps_source)
+        file:close()
+        print("[bootstrap] Fetched " .. path .. " from " .. url)
+    end
+    Deps = filesystem.doFile(path)
+
+    -- Run the app
+    local app = Deps(table.unpack(BOOTSTRAP_APP))
+    app()
+end
+_bootstrap()

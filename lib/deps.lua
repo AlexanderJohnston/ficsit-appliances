@@ -81,11 +81,11 @@ function Deps:resolve(input, version)
         cachepath = cachepath .. ".lua"
     end
 
-    return libname, url, cachepath
+    return libname, version, url, cachepath
 end
 
-function Deps:ensure_downloaded(input, version)
-    local libname, url, cachepath = self:resolve(input, version)
+function Deps:ensure_downloaded(input, input_version)
+    local libname, version, url, cachepath = self:resolve(input, input_version)
     if version == "main" or not filesystem.exists(cachepath) then
         print("[Deps] Downloading " .. libname .. "\n       version " .. version .. "\n       from " .. url ..
                   "\n       to " .. cachepath)
@@ -97,8 +97,8 @@ function Deps:ensure_downloaded(input, version)
     return cachepath
 end
 
-function Deps:require(input, version)
-    local libname, url, cachepath = self:resolve(input, version)
+function Deps:require(input, input_version)
+    local libname, version, url, cachepath = self:resolve(input, input_version)
     if Deps.cache[libname] == nil then
         self:ensure_downloaded(input, version)
         Deps.cache[libname] = {
