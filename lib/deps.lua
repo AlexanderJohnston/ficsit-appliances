@@ -23,9 +23,9 @@ local function mkdir_p(dir)
         path = path .. "/" .. part
         if not filesystem.isDir(path) then
             if filesystem.createDir(path) then
-                print("[Deps] Created directory " .. dir)
+                print("[Deps] Created directory " .. path)
             else
-                computer.panic("[Deps] Cannot create directory " .. dir)
+                computer.panic("[Deps] Cannot create directory " .. path)
             end
         end
     end
