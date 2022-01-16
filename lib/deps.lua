@@ -84,7 +84,7 @@ function Deps:resolve(input, version)
 
     cachepath = self.cachedir .. "/" .. libname .. "-" .. version
     cachepath = string.gsub(cachepath, ":", "/")
-    if not string.match(cachepath, "\.lua$") then
+    if not string.match(cachepath, "\\.lua$") then
         cachepath = cachepath .. ".lua"
     end
 
