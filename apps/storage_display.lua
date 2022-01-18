@@ -97,6 +97,10 @@ function History:record(db, duration)
     self:prune()
 end
 
+function History:size()
+    return #self.entries
+end
+
 function History:prune()
     local cutoff = time.timestamp() - self.retention
     local i = 1
@@ -375,7 +379,7 @@ local function main()
         local f = fs.open(CONFIG.history_file, "r")
         history = History:new(json.decode(f:read("*all")))
         f:close()
-        print("Loaded history from " .. CONFIG.history_file)
+        print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
     else
         history = History:new{
             retention = 900,
