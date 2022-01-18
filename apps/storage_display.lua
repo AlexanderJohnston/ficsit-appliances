@@ -376,7 +376,7 @@ end
 
 local function load_history()
     local f = fs.open(CONFIG.history_file, "r")
-    local content = f:read("all")
+    local content = f:read("*all")
     print(content)
     local history = History:new(json.decode(content))
     f:close()
