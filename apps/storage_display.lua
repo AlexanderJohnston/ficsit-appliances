@@ -174,7 +174,7 @@ end
 
 function TablePrinter:sort()
     shellsort(self.rows, function(a, b)
-        return a[1] < b[1]
+        return a.cells[1] < b.cells[1]
     end)
 end
 
