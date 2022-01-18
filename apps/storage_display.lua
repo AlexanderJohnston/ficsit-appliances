@@ -369,20 +369,31 @@ local function highlight_changed(old, new)
     return old[1] ~= new[1] or old[2] ~= new[2]
 end
 
+local function load_history()
+    local f = fs.open(CONFIG.history_file, "r")
+    local content = f:read("all")
+    print(content)
+    local history = History:new(json.decode(content))
+    f:close()
+    print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
+    return history
+end
+
 local function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     local gpu = hw.gpu()
     local main_display = component.proxy(CONFIG.main_display)
 
-    local history
+    local history = nil
     if fs.exists(CONFIG.history_file) then
-        local f = fs.open(CONFIG.history_file, "r")
-        local content = f:read("all")
-        print(content)
-        history = History:new(json.decode(content))
-        f:close()
-        print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
-    else
+        local status, history_or_error = pcall(load_history)
+        if status then
+            history = history_or_error
+        else
+            print("Error loading history: " .. history_or_error)
+        end
+    end
+    if history == nil then
         history = History:new{
             retention = 900,
             frequency = 5
