@@ -1,5 +1,5 @@
 local fs = Deps("lib/fs")
-local json = Deps("rxi:json.lua/json", "v0.1.2")
+local json = Deps("rxi/json.lua:json", "v0.1.2")
 local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
