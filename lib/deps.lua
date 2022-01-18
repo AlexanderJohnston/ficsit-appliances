@@ -63,7 +63,7 @@ function Deps:resolve(input, version)
     end
 
     if string.match(input, "^https?://") then
-        local _, libname = string.match(input, "^(https?://[^/]+)/(.*)$")
+        _, libname = string.match(input, "^(https?://[^/]+)/(.*)$")
         url = input
     else
         local repo, path
@@ -72,7 +72,7 @@ function Deps:resolve(input, version)
         else
             repo, path = REPOSITORY, input
         end
-        libname = repo .. ":" .. input
+        libname = repo .. ":" .. path
         url = "https://raw.githubusercontent.com/" .. repo .. "/" .. version .. "/" .. path .. ".lua"
     end
 
