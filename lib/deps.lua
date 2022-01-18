@@ -29,11 +29,11 @@ local Deps = {
 }
 Deps.__index = Deps
 function Deps:new(cachedir)
-    local self = setmetatable({}, Deps)
-    self.internet = pci("FINInternetCard")
-    self.cachedir = cachedir or "/deps_cache"
-    mkdir_p(self.cachedir)
-    return self
+    local o = setmetatable({}, self)
+    o.internet = pci("FINInternetCard")
+    o.cachedir = cachedir or "/deps_cache"
+    mkdir_p(o.cachedir)
+    return o;
 end
 
 function Deps:download(url, path)

@@ -57,7 +57,7 @@ local function ssgeneral(t, n, before)
     return t
 end
 
-function shellsort(t, before, n)
+local function shellsort(t, before, n)
     n = n or #t
     if not before or before == "<" then
         return ssup(t, n)

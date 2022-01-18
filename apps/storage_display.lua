@@ -18,8 +18,8 @@ YELLOW = {1, 1, 0, 1}
 
 DB = {}
 DB.__index = DB
-function DB:new()
-    local o = {
+function DB:new(o)
+    o = o or {
         entries = {}
     }
     setmetatable(o, self)
@@ -28,19 +28,29 @@ end
 
 function DB:entry(item_type)
     if self.entries[item_type.name] == nil then
-        self.entries[item_type.name] = DBEntry:new(item_type)
+        self.entries[item_type.name] = DBEntry:new{
+            item_type = {
+                name = item_type.name,
+                max = item_type.max
+            }
+        }
     end
     return self.entries[item_type.name]
 end
 
+function DB:to_json()
+    return {
+        entries = self.entries
+    }
+end
+
 DBEntry = {}
 DBEntry.__index = DBEntry
-function DBEntry:new(item_type)
-    local o = {
-        item_type = item_type,
-        count = 0,
-        storage_capacity = 0
-    }
+function DBEntry:new(o)
+    o = o or {}
+    o.item_type = o.item_type or nil
+    o.count = o.count or 0
+    o.storage_capacity = o.storage_capacity or 0
     setmetatable(o, self)
     return o
 end
@@ -59,20 +69,30 @@ function DBEntry:get_fill_percent()
     return math.floor(self.count / self.storage_capacity * 100)
 end
 
+function DBEntry:to_json()
+    return {
+        item_type = self.item_type,
+        count = self.count,
+        storage_capacity = self.storage_capacity
+    }
+end
+
 History = {}
 History.__index = History
-function History:new(retention, frequency)
-    local o = {
-        entries = {},
-        retention = retention or 300,
-        frequency = frequency or 5
-    }
+function History:new(o)
+    o = o or {}
+    o.entries = o.entries or {}
+    o.retention = o.retention or 300
+    o.frequency = o.frequency or 5
     setmetatable(o, self)
     return o
 end
 
 function History:record(db, duration)
-    table.insert(self.entries, HistoryEntry:new(db, duration))
+    table.insert(self.entries, HistoryEntry:new{
+        db = db,
+        duration = duration
+    })
     self:prune()
 end
 
@@ -114,27 +134,34 @@ function History:last()
 end
 
 function History:to_json()
-    return json.encode(self.entries)
-end
-
-function History:load_json(json_string)
-    self.entries = json.decode(json_string)
+    return {
+        entries = self.entries,
+        retention = self.retention,
+        frequency = self.frequency
+    }
 end
 
 HistoryEntry = {}
 HistoryEntry.__index = HistoryEntry
-function HistoryEntry:new(db, duration)
-    local o = {
-        db = db,
-        time = time.timestamp(),
-        duration = duration
-    }
+function HistoryEntry:new(o)
+    o = o or {}
+    o.db = o.db or nil
+    o.time = o.time or time.timestamp()
+    o.duration = o.duration or nil
     setmetatable(o, self)
     return o
 end
 
 function HistoryEntry:age()
     return math.floor(time.timestamp() - self.time)
+end
+
+function HistoryEntry:to_json()
+    return {
+        db = self.db:to_json(),
+        time = self.time,
+        duration = self.duration
+    }
 end
 
 local function count_items(db, container)
@@ -341,7 +368,10 @@ local function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     local gpu = hw.gpu()
     local main_display = component.proxy(CONFIG.main_display)
-    local history = History:new(900, 5)
+    local history = History:new{
+        retention = 900,
+        frequency = 5
+    }
 
     gpu:bindScreen(main_display)
     event.listen(gpu)
@@ -365,7 +395,7 @@ local function main()
             end
             if e == "OnMouseDown" then
                 force_update = true
-                print(history:to_json())
+                print(json.encode(history:to_json()))
             end
             e, s, x, y = event.pull(0)
         end

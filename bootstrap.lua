@@ -5,7 +5,7 @@ DEPS_COMMIT = "1767520"
 
 -- YOU SHOULD NOT HAVE TO EDIT ANYTHING BELOW THIS LINE --
 Deps = nil
-function _bootstrap()
+local function _bootstrap()
     -- Initialize FS
     if filesystem.initFileSystem("/dev") == false then
         computer.panic("Cannot initialize /dev")
