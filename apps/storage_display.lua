@@ -5,7 +5,8 @@ local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
 
 CONFIG = {
-    main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17"
+    main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
+    history_file = "/storage_display/history.json"
 }
 
 BLACK = {0, 0, 0, 1}
@@ -368,10 +369,20 @@ local function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     local gpu = hw.gpu()
     local main_display = component.proxy(CONFIG.main_display)
-    local history = History:new{
-        retention = 900,
-        frequency = 5
-    }
+
+    local history
+    if fs.exists(CONFIG.history_file) then
+        local f = fs.open(CONFIG.history_file, "r")
+        history = History:new(json.decode(f:readAll()))
+        f:close()
+        print("Loaded history from " .. CONFIG.history_file)
+    else
+        history = History:new{
+            retention = 900,
+            frequency = 5
+        }
+        print("Created new history")
+    end
 
     gpu:bindScreen(main_display)
     event.listen(gpu)
@@ -395,7 +406,6 @@ local function main()
             end
             if e == "OnMouseDown" then
                 force_update = true
-                print(json.encode(history:to_json()))
             end
             e, s, x, y = event.pull(0)
         end
@@ -407,6 +417,9 @@ local function main()
         if time_to_next_snapshot <= 0 or force_update then
             snapshot(history, containers)
             last_time_to_next_snapshot = time_to_next_snapshot
+            local f = fs.open(CONFIG.history_file, "w")
+            f:write(json.encode(history:to_json()))
+            f.close()
             dirty = true
         end
 
