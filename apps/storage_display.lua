@@ -158,7 +158,9 @@ TablePrinter = {}
 TablePrinter.__index = TablePrinter
 function TablePrinter:new(headings)
     local o = {
-        headings = headings,
+        headings = {
+            cells = headings
+        },
         rows = {},
         rowcolors = {},
         widths = {}
