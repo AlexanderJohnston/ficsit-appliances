@@ -1,4 +1,5 @@
 local fs = Deps("lib/fs")
+local json = Deps("rxi:json.lua/json", "v0.1.2")
 local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
@@ -110,6 +111,14 @@ end
 
 function History:last()
     return self.entries[#self.entries]
+end
+
+function History:to_json()
+    return json.encode(self.entries)
+end
+
+function History:load_json(json_string)
+    self.entries = json.decode(json_string)
 end
 
 HistoryEntry = {}
@@ -242,14 +251,14 @@ function TablePrinter:format(highlight)
     return retval
 end
 
-function display_status(gpu, y, status)
+local function display_status(gpu, y, status)
     gpu:setForeground(table.unpack(GRAY30))
     gpu:setBackground(table.unpack(BLACK))
     gpu:setText(0, y, status)
     gpu:setForeground(table.unpack(WHITE))
 end
 
-function display(history, highlight, gpu, status)
+local function display(history, highlight, gpu, status)
     local table_printer = TablePrinter:new{"NAME", "COUNT", "CAPACITY", "FILL%", "RATE@15S", "RATE@1M", "RATE@10M"}
     local width = #status
 
@@ -309,7 +318,7 @@ function display(history, highlight, gpu, status)
     gpu:flush()
 end
 
-function snapshot(history, containers)
+local function snapshot(history, containers)
     local start = computer.millis()
     local db = DB:new()
     for _, container in pairs(containers) do
@@ -318,7 +327,7 @@ function snapshot(history, containers)
     history:record(db, computer.millis() - start)
 end
 
-function highlight_changed(old, new)
+local function highlight_changed(old, new)
     if old == nil then
         return new ~= nil
     end
@@ -328,12 +337,11 @@ function highlight_changed(old, new)
     return old[1] ~= new[1] or old[2] ~= new[2]
 end
 
-function main()
+local function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     local gpu = hw.gpu()
     local main_display = component.proxy(CONFIG.main_display)
     local history = History:new(900, 5)
-    local status = "Startup"
 
     gpu:bindScreen(main_display)
     event.listen(gpu)
@@ -357,6 +365,7 @@ function main()
             end
             if e == "OnMouseDown" then
                 force_update = true
+                print(history:to_json())
             end
             e, s, x, y = event.pull(0)
         end
@@ -372,9 +381,9 @@ function main()
         end
 
         if dirty then
-            display(history, last_highlight, gpu,
-                string.format("Last update %ss ago (took %sms). Next update in %ss or on click.", history:last():age(),
-                    history:last().duration, time_to_next_snapshot))
+            local status = string.format("Last update %ss ago (took %sms). Next update in %ss or on click.",
+                history:last():age(), history:last().duration, time_to_next_snapshot)
+            display(history, last_highlight, gpu, status)
         end
     end
 end
