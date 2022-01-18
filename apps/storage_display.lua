@@ -139,8 +139,13 @@ function History:last()
 end
 
 function History:to_json()
+    local entries = {}
+    for _, entry in pairs(self.entries) do
+        table.insert(entries, entry:to_json())
+    end
+
     return {
-        entries = self.entries,
+        entries = entries,
         retention = self.retention,
         frequency = self.frequency
     }
