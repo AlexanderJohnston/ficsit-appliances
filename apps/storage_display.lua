@@ -420,7 +420,7 @@ local function main()
             fs.mkdir_p(fs.dirname(CONFIG.history_file))
             local f = fs.open(CONFIG.history_file, "w")
             f:write(json.encode(history:to_json()))
-            f.close()
+            f:close()
             dirty = true
         end
 
