@@ -199,7 +199,7 @@ end
 function TablePrinter:align_columns(row)
     local padding
     local retval = {}
-    for j, cell in pairs(row) do
+    for j, cell in pairs(row.cells) do
         padding = self.widths[j] - #cell
         table.insert(retval, string.rep(" ", padding) .. " " .. cell .. " ")
     end
