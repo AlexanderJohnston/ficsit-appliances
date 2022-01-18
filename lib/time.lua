@@ -32,4 +32,11 @@ function time.real_seconds_save_age()
     return time.game_to_real(time.game_seconds_save_age())
 end
 
+function time.timestamp()
+    --- Best monothonic, second-resolution timestamp we have
+    -- ideally this would be time.real_seconds_save_age(),
+    -- but that's borked currently due to https://github.com/Panakotta00/FicsIt-Networks/issues/200
+    return time.real_seconds_since_boot()
+end
+
 return time

@@ -1,7 +1,7 @@
-local fs = Deps("lib/fs", "main")
-local time = Deps("lib/time", "4276d56")
-local shellsort = Deps("third_party/shellsort", "44c49ce")
-local hw = Deps("lib/hw", "main")
+local fs = Deps("lib/fs")
+local time = Deps("lib/time")
+local shellsort = Deps("third_party/shellsort")
+local hw = Deps("lib/hw")
 
 CONFIG = {
     main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17"
@@ -58,10 +58,6 @@ function DBEntry:get_fill_percent()
     return math.floor(self.count / self.storage_capacity * 100)
 end
 
-function computer.seconds()
-    return computer.millis() / 1000
-end
-
 History = {}
 History.__index = History
 function History:new(retention, frequency)
@@ -80,7 +76,7 @@ function History:record(db, duration)
 end
 
 function History:prune()
-    local cutoff = computer.seconds() - self.retention
+    local cutoff = time.timestamp() - self.retention
     local i = 1
     while i <= #self.entries do
         if self.entries[i].time < cutoff then
@@ -121,7 +117,7 @@ HistoryEntry.__index = HistoryEntry
 function HistoryEntry:new(db, duration)
     local o = {
         db = db,
-        time = time.real_seconds_save_age(),
+        time = time.timestamp(),
         duration = duration
     }
     setmetatable(o, self)
@@ -129,7 +125,7 @@ function HistoryEntry:new(db, duration)
 end
 
 function HistoryEntry:age()
-    return math.floor(time.real_seconds_save_age() - self.time)
+    return math.floor(time.timestamp() - self.time)
 end
 
 local function count_items(db, container)

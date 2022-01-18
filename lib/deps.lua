@@ -53,12 +53,13 @@ function Deps:resolve(input, version)
     ---     * Path (resolved into this GitHub repository)
     ---     * repository:path
     --- version must reference a commit (can be a tag, commit hash, branch, etc.)
+    ---   version defaults to BOOTSTRAP_APP[2]
     local libname
     local url
     local cachepath
 
     if version == nil then
-        version = "main"
+        version = BOOTSTRAP_APP[2]
     end
 
     if string.match(input, "^https?://") then

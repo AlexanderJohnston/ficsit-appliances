@@ -1,6 +1,6 @@
-shellsort = Deps("third_party/shellsort", "fd1ff9f")
+local shellsort = Deps("third_party/shellsort")
 
-function main()
+local function main()
     local t = {3, 2, 1}
     shellsort(t)
     for _, n in pairs(t) do
