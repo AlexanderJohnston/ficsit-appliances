@@ -373,7 +373,7 @@ local function main()
     local history
     if fs.exists(CONFIG.history_file) then
         local f = fs.open(CONFIG.history_file, "r")
-        history = History:new(json.decode(f:readAll()))
+        history = History:new(json.decode(f:read("*all")))
         f:close()
         print("Loaded history from " .. CONFIG.history_file)
     else
