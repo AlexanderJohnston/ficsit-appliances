@@ -1,7 +1,7 @@
-fs = Deps("lib/fs", "main")
-time = Deps("lib/time", "4276d56")
-shellsort = Deps("third_party/shellsort", "44c49ce")
-hw = Deps("lib/hw", "main")
+local fs = Deps("lib/fs", "main")
+local time = Deps("lib/time", "4276d56")
+local shellsort = Deps("third_party/shellsort", "44c49ce")
+local hw = Deps("lib/hw", "main")
 
 CONFIG = {
     main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17"
@@ -18,7 +18,7 @@ YELLOW = {1, 1, 0, 1}
 DB = {}
 DB.__index = DB
 function DB:new()
-    o = {
+    local o = {
         entries = {}
     }
     setmetatable(o, self)
@@ -132,7 +132,7 @@ function HistoryEntry:age()
     return math.floor(time.real_seconds_save_age() - self.time)
 end
 
-function count_items(db, container)
+local function count_items(db, container)
     local inventories = container:getInventories()
     for _, inventory in pairs(inventories) do
         local db_entry = nil
@@ -142,8 +142,8 @@ function count_items(db, container)
                 if db_entry == nil then
                     db_entry = db:entry(stack.item.type)
                 elseif db_entry.item_type.name ~= stack.item.type.name then
-                    panic("ERROR: multiple items in container " .. container.getHash() .. " inventory " ..
-                              inventory.getHash())
+                    computer.panic("ERROR: multiple items in container " .. container.getHash() .. " inventory " ..
+                                       inventory.getHash())
                 end
                 db_entry:record_items(stack.count)
             end
@@ -183,7 +183,6 @@ function TablePrinter:insert(color, row)
     for _, col in pairs(row) do
         table.insert(row_str, tostring(col))
     end
-    table.insert(self.rows, row_str)
 
     for i, cell in pairs(row_str) do
         if self.widths[i] == nil or #cell > self.widths[i] then
@@ -191,7 +190,10 @@ function TablePrinter:insert(color, row)
         end
     end
 
-    table.insert(self.rowcolors, color)
+    table.insert(self.rows, {
+        color = color,
+        cells = row_str
+    })
 end
 
 function TablePrinter:align_columns(row)
@@ -209,23 +211,23 @@ function TablePrinter:colors(cell, highlight)
     if y == 0 then
         return BLACK, WHITE
     end
+    local bgcolor = BLACK
     if highlight ~= nil and highlight[2] <= #self.rows then
         local x_hit = x < highlight[1] and x + width >= highlight[1]
         local y_hit = y == highlight[2]
         if x_hit and y_hit then
-            return self.rowcolors[y], GRAY50
-        end
-        if x_hit or y_hit then
-            return self.rowcolors[y], GRAY30
+            bgcolor = GRAY50
+        elseif x_hit or y_hit then
+            bgcolor = GRAY30
         end
     end
-    return self.rowcolors[y], BLACK
+    return self.rows[y].color, bgcolor
 end
 
 function TablePrinter:format_row(y, highlight, row)
     local retval = {}
     local x = 1
-    for _, cell in pairs(self:align_columns(row)) do
+    for _, cell in pairs(self:align_columns(row.cells)) do
         local fg, bg = self:colors({x, y, #cell}, highlight)
         table.insert(retval, {cell, fg, bg})
         x = x + #cell
