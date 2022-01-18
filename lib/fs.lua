@@ -17,4 +17,8 @@ function fs.mkdir_p(dir)
     end
 end
 
+function fs.dirname(path)
+    return string.match(path, "^(.*)/[^/]+$")
+end
+
 return fs

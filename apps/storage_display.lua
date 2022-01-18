@@ -417,6 +417,7 @@ local function main()
         if time_to_next_snapshot <= 0 or force_update then
             snapshot(history, containers)
             last_time_to_next_snapshot = time_to_next_snapshot
+            fs.mkdir_p(fs.dirname(CONFIG.history_file))
             local f = fs.open(CONFIG.history_file, "w")
             f:write(json.encode(history:to_json()))
             f.close()
