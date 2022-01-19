@@ -1,13 +1,13 @@
 local fs = Deps("lib/fs")
-local binser = Deps("bakpakin/binser:binser", "0.0-8")
-local class = Deps("Yonaba/30log:30log-clean", "30log-1.3.0-1")
+local bitser = Deps("gvx:bitser/bitser", "v1.1")
+local class = Deps("kikito/middleclass:middleclass", "v4.1.1")
 local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
 
 CONFIG = {
     main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
-    history_file = "/storage_display/history.binser"
+    history_file = "/storage_display/history.bitser"
 }
 
 BLACK = {0, 0, 0, 1}
@@ -19,9 +19,8 @@ RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
 
 local ItemTypeRegistry = class("ItemTypeRegistry")
--- ItemTypeRegistry._template = {"entries", "lookup"}
-binser.registerClass(ItemTypeRegistry)
-function ItemTypeRegistry:init()
+bitser.registerClass(ItemTypeRegistry)
+function ItemTypeRegistry:initialize()
     self.entries = {}
     self.lookup = {}
 end
@@ -41,8 +40,7 @@ end
 local item_type_registry = ItemTypeRegistry:new()
 
 DB = class("DB")
-DB._template = {"entries"}
-function DB:init()
+function DB:initialize()
     self.entries = {}
 end
 
@@ -55,11 +53,10 @@ function DB:entry(item_type)
     end
     return self.entries[item_type_index]
 end
-binser.registerClass(DB)
+bitser.registerClass(DB)
 
 DBEntry = class("DBEntry")
-DBEntry._template = {"count", "storage_capacity", "item_type_index"}
-function DBEntry:init(o)
+function DBEntry:initialize(o)
     self.item_type_index = o.item_type_index
     self.count = 0
     self.storage_capacity = 0
@@ -82,11 +79,10 @@ end
 function DBEntry:item_type()
     return item_type_registry:get(self.item_type_index)
 end
-binser.registerClass(DBEntry)
+bitser.registerClass(DBEntry)
 
 History = class("History")
-History._template = {"entries", "retention", "frequency"}
-function History:init(o)
+function History:initialize(o)
     self.entries = {}
     self.retention = o.retention or 300
     self.frequency = o.frequency or 5
@@ -140,11 +136,10 @@ end
 function History:last()
     return self.entries[#self.entries]
 end
-binser.registerClass(History)
+bitser.registerClass(History)
 
 HistoryEntry = class("HistoryEntry")
-HistoryEntry._template = {"time", "db", "duration"}
-function HistoryEntry:init(o)
+function HistoryEntry:initialize(o)
     self.time = time.timestamp()
     self.db = o.db
     self.duration = o.duration
@@ -176,10 +171,10 @@ local function count_items(db, container)
         end
     end
 end
-binser.registerClass(HistoryEntry)
+bitser.registerClass(HistoryEntry)
 
 TablePrinter = class("TablePrinter")
-function TablePrinter:init(o)
+function TablePrinter:initialize(o)
     self.headings = {
         cells = o.headings
     }
@@ -359,7 +354,7 @@ local function load_history()
     print("Read " .. #content .. " bytes from " .. CONFIG.history_file .. " in " .. timer() .. "ms")
 
     timer = time.timer()
-    local registry, history = binser.deserializeN(content, 2)
+    local registry, history = table.unpack(bitser.loads(content))
     print("Deserialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
 
     return registry, history
@@ -425,7 +420,7 @@ local function main()
 
             local timer = time.timer()
             fs.mkdir_p(fs.dirname(CONFIG.history_file))
-            local content = binser.serialize(item_type_registry, history)
+            local content = bitser.dumps {item_type_registry, history}
             fs.write_all(CONFIG.history_file, content)
             print("Dumped " .. #content .. " bytes of history to " .. CONFIG.history_file .. " in " .. timer() .. " ms")
         end
