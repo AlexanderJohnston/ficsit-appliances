@@ -124,7 +124,8 @@ local function main()
         end
         local status_str = table.concat(status_strs, " | ")
 
-        table_printer:insert(color, {name, entry.productivity, status_str})
+        local productivity_str = string.format("%d%%", entry.productivity * 100)
+        table_printer:insert(color, {name, productivity_str, status_str})
     end
 
     table_printer:sort()
