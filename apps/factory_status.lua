@@ -109,13 +109,13 @@ local function main()
     for name, entry in pairs(entries) do
         local color
         if entry.productivity > 0.9 then
-            color = colors.GREEN
+            color = colors.green
         elseif entry.worst_status == "BackedUp" then
-            color = colors.YELLOW
+            color = colors.yellow
         elseif entry.worst_status == "Starved" then
-            color = colors.RED
+            color = colors.red
         else
-            color = colors.WHITE
+            color = colors.white
         end
 
         local status_strs = {}
