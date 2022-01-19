@@ -23,6 +23,11 @@ function DB:new(o)
     o = o or {
         entries = {}
     }
+
+    for i, entry in ipairs(o.entries) do
+        o.entries[i] = DBEntry:new(entry)
+    end
+
     setmetatable(o, self)
     return o
 end
@@ -161,6 +166,11 @@ HistoryEntry.__index = HistoryEntry
 function HistoryEntry:new(o)
     o = o or {}
     o.db = o.db or nil
+
+    if o.db then
+        o.db = DB:new(o.db)
+    end
+
     o.time = o.time or time.timestamp()
     o.duration = o.duration or nil
     setmetatable(o, self)
