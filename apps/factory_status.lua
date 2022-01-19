@@ -130,6 +130,7 @@ local function main()
     print(inspect(table_printer))
     table_printer:sort()
     table_printer:print(nil, gpu)
+    gpu:flush()
 end
 
 return main
