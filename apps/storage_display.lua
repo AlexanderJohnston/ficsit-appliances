@@ -169,7 +169,7 @@ function History._deserialize(raw_history_entries)
     local h = History:new()
     for i, raw_history_entry in pairs(raw_history_entries) do
         local history_entry = HistoryEntry:new{
-            time = raw_history_entry[1] - time_offset,
+            time = raw_history_entry[1] + time_offset,
             duration = raw_history_entry[2],
             db = DB:new()
         }
