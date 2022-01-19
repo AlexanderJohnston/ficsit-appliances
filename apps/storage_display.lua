@@ -18,11 +18,7 @@ CONFIG = CONFIG or CONFIG {
     history_file = "/storage_display/history.binser",
     retention = 650,
     frequency = 25,
-    rates = {
-        ["30s"] = 30,
-        ["5m"] = 300,
-        ["10m"] = 600
-    }
+    rates = {{"30s", 30}, {"5m", 5 * 60}, {"10m", 10 * 60}}
 }
 
 local ItemTypeRegistry = class("ItemTypeRegistry")
@@ -315,8 +311,8 @@ end
 
 local function display(history, highlight, gpu, status)
     local headings = {"NAME", "COUNT", "CAPACITY", "FILL%"}
-    for rate_name, _ in pairs(CONFIG.rates) do
-        table.insert(headings, "RATE@" .. rate_name)
+    for _, rate in pairs(CONFIG.rates) do
+        table.insert(headings, "RATE@" .. rate[1])
     end
     local table_printer = TablePrinter:new{
         headings = headings
@@ -325,8 +321,8 @@ local function display(history, highlight, gpu, status)
 
     local max_rate = 0
     for _, rate in pairs(CONFIG.rates) do
-        if rate > max_rate then
-            max_rate = rate
+        if rate[2] > max_rate then
+            max_rate = rate[2]
         end
     end
 
@@ -348,7 +344,7 @@ local function display(history, highlight, gpu, status)
             end
             local cells = {entry:item_type().name, entry.count, entry.storage_capacity, entry:get_fill_percent()}
             for _, rate in pairs(CONFIG.rates) do
-                table.insert(cells, string.format("%s/m", history:rate_per_minute(entry:item_type(), rate)))
+                table.insert(cells, string.format("%s/m", history:rate_per_minute(entry:item_type(), rate[2])))
             end
             table_printer:insert(color, cells)
         end
