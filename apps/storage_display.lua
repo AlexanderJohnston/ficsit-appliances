@@ -177,7 +177,7 @@ function History:_deserialize(frequency, retention, entries)
                 storage_capacity = odbe.storage_capacity,
                 item_type_index = odbe.item_type_index
             }
-            he.db.entries[j] = odbe
+            he.db.entries[j] = dbe
         end
         h.entries[i] = he
     end
