@@ -93,7 +93,7 @@ end
 
 local function main()
     local gpu = hw.gpu()
-    local main_display = component.proxy(CONFIG.main_display)
+    local main_display = component.proxy(component.findComponent(CONFIG.main_display))
     gpu:bindScreen(main_display)
 
     local table_printer = TablePrinter:new{
@@ -106,8 +106,7 @@ local function main()
         builder:record(factory:getRecipe().name, factory.productivity, factory:getInventories())
     end
 
-    local entries = builder:build()
-    for name, entry in pairs(entries) do
+    for name, entry in pairs(builder:build()) do
         local color
         if entry.productivity > 0.9 then
             color = colors.green
@@ -124,10 +123,10 @@ local function main()
             table.insert(status_strs, string.format("%s: %d", status, count))
         end
         local status_str = table.concat(status_strs, " | ")
+
         table_printer:insert(color, {name, entry.productivity, status_str})
     end
 
-    print(inspect(table_printer))
     table_printer:sort()
     table_printer:print(nil, gpu)
     gpu:flush()
