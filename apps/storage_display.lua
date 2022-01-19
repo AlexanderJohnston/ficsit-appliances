@@ -142,10 +142,46 @@ function History:last()
 end
 
 function History:_serialize()
-    return {}
+    local entries = {}
+    for i, he in pairs(self.entries) do
+        local ohe = {
+            time = he.time,
+            duration = he.duration,
+            db = {}
+        }
+        for j, dbe in pairs(he.db.entries) do
+            local odbe = {
+                count = dbe.count,
+                storage_capacity = dbe.storage_capacity,
+                item_type_index = dbe.item_type_index
+            }
+            ohe.db[j] = odbe
+        end
+        entries[i] = ohe
+    end
+    return self.frequency, self.retention, entries
 end
-function History:_deserialize()
-    return History:new{}
+function History:_deserialize(frequency, retention, entries)
+    local h = History:new{
+        frequency = frequency,
+        retention = retention
+    }
+    for i, ohe in pairs(entries) do
+        local he = HistoryEntry:new{
+            time = ohe.time,
+            duration = ohe.duration
+        }
+        for j, odbe in pairs(ohe.db) do
+            local dbe = DBEntry:new{
+                count = odbe.count,
+                storage_capacity = odbe.storage_capacity,
+                item_type_index = odbe.item_type_index
+            }
+            he.db.entries[j] = odbe
+        end
+        h.entries[i] = he
+    end
+    return h
 end
 binser.registerClass(History)
 
