@@ -377,6 +377,11 @@ local function main()
         print("Created new history")
     end
 
+    local history_dumper = HistoryDumper:new{
+        history = history,
+        path = CONFIG.history_file
+    }
+
     gpu:bindScreen(main_display)
     event.listen(gpu)
 
@@ -409,6 +414,7 @@ local function main()
         end
         if time_to_next_snapshot <= 0 or force_update then
             snapshot(history, containers)
+            history_dumper:dump()
             last_time_to_next_snapshot = time_to_next_snapshot
             dirty = true
         end
