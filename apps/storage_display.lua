@@ -328,7 +328,7 @@ end
 
 local function load_history()
     local content = fs.read_all(CONFIG.history_file)
-    local history = binser.deserialize(content)
+    local history = binser.deserializeN(content)
     print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
     return history
 end
