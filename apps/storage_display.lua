@@ -18,6 +18,28 @@ GREEN = {0, 1, 0, 1}
 RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
 
+local ItemTypeRegistry = class("ItemTypeRegistry")
+binser.registerClass(ItemTypeRegistry)
+ItemTypeRegistry._template = {"entries", "lookup"}
+function ItemTypeRegistry:initialize()
+    self.entries = {}
+    self.lookup = {}
+end
+function ItemTypeRegistry:register(item_type)
+    if self.lookup[item_type.name] == nil then
+        table.insert(self.entries, {
+            name = item_type.name,
+            max = item_type.max
+        })
+        self.lookup[item_type.name] = #self.entries
+    end
+    return self.lookup[item_type.name]
+end
+function ItemTypeRegistry:get(index)
+    return self.entries[index]
+end
+local item_type_registry = ItemTypeRegistry:new()
+
 DB = class("DB")
 binser.registerClass(DB)
 DB._template = {"entries"}
@@ -26,16 +48,13 @@ function DB:initialize()
 end
 
 function DB:entry(item_type)
-    print(item_type:getType().name)
-    if self.entries[item_type.name] == nil then
-        self.entries[item_type.name] = DBEntry:new{
-            item_type = {
-                name = item_type.name,
-                max = item_type.max
-            }
+    local item_type_index = item_type_registry:register(item_type)
+    if self.entries[item_type_index] == nil then
+        self.entries[item_type_index] = DBEntry:new{
+            item_type_index = item_type_index
         }
     end
-    return self.entries[item_type.name]
+    return self.entries[item_type_index]
 end
 
 DBEntry = class("DBEntry")
@@ -46,7 +65,7 @@ DBEntry._template = {
     item_type = {"name", "max"}
 }
 function DBEntry:initialize(o)
-    self.item_type = o.item_type
+    self.item_type_index = o.item_type_index
     self.count = 0
     self.storage_capacity = 0
 end
@@ -57,12 +76,16 @@ function DBEntry:record_items(count)
 end
 
 function DBEntry:record_capacity(stacks)
-    self.storage_capacity = self.storage_capacity + stacks * self.item_type.max
+    self.storage_capacity = self.storage_capacity + stacks * self:item_type().max
     return self
 end
 
 function DBEntry:get_fill_percent()
     return math.floor(self.count / self.storage_capacity * 100)
+end
+
+function DBEntry:item_type()
+    return item_type_registry:get(self.item_type_index)
 end
 
 History = class("History")
@@ -147,9 +170,9 @@ local function count_items(db, container)
             if stack ~= nil and stack.count ~= 0 then
                 if db_entry == nil then
                     db_entry = db:entry(stack.item.type)
-                elseif db_entry.item_type.name ~= stack.item.type.name then
+                elseif db_entry:item_type().name ~= stack.item.type.name then
                     computer.panic("ERROR: multiple items in container " .. container:getHash() .. " inventory " ..
-                                       inventory:getHash() .. ": " .. db_entry.item_type.name .. " and " ..
+                                       inventory:getHash() .. ": " .. db_entry:item_type().name .. " and " ..
                                        stack.item.type.name)
                 end
                 db_entry:record_items(stack.count)
@@ -265,7 +288,7 @@ local function display(history, highlight, gpu, status)
         local db = history_entry.db
         for _, entry in pairs(db.entries) do
             local fill_percent = entry:get_fill_percent()
-            local rate_10min = history:rate_per_minute(entry.item_type, 600)
+            local rate_10min = history:rate_per_minute(entry:item_type(), 600)
             local color
             if fill_percent >= 99 then
                 color = GREEN
@@ -277,9 +300,10 @@ local function display(history, highlight, gpu, status)
                 color = RED
             end
             table_printer:insert(color,
-                {entry.item_type.name, entry.count, entry.storage_capacity, entry:get_fill_percent(),
-                 string.format("%s/m", history:rate_per_minute(entry.item_type, 15)),
-                 string.format("%s/m", history:rate_per_minute(entry.item_type, 60)), string.format("%s/m", rate_10min)})
+                {entry:item_type().name, entry.count, entry.storage_capacity, entry:get_fill_percent(),
+                 string.format("%s/m", history:rate_per_minute(entry:item_type(), 15)),
+                 string.format("%s/m", history:rate_per_minute(entry:item_type(), 60)),
+                 string.format("%s/m", rate_10min)})
         end
         table_printer:sort()
 
@@ -341,10 +365,10 @@ local function load_history()
     print("Read " .. #content .. " bytes from " .. CONFIG.history_file .. " in " .. timer() .. "ms")
 
     timer = time.timer()
-    local history = binser.deserializeN(content)
+    local registry, history = binser.deserializeN(content)
     print("Deserialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
 
-    return history
+    return registry, history
 end
 
 local function main()
@@ -354,9 +378,10 @@ local function main()
 
     local history = nil
     if fs.exists(CONFIG.history_file) then
-        local status, history_or_error = pcall(load_history)
+        local status, registry, history_or_error = pcall(load_history)
         if status then
             history = history_or_error
+            item_type_registry = registry
         else
             print("Error loading history: " .. history_or_error)
         end
@@ -406,7 +431,7 @@ local function main()
 
             local timer = time.timer()
             fs.mkdir_p(fs.dirname(CONFIG.history_file))
-            local content = binser.serialize(history)
+            local content = binser.serialize(item_type_registry, history)
             fs.write_all(CONFIG.history_file, content)
             print("Dumped " .. #content .. " bytes of history to " .. CONFIG.history_file .. " in " .. timer() .. " ms")
         end
