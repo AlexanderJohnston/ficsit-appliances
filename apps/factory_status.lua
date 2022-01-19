@@ -1,5 +1,5 @@
 local class = Deps("kikito/middleclass:middleclass", "v4.1.1")
-local inspect = Deps("kikito/inspect:inspect", "v3.1.2")
+local inspect = Deps("kikito/inspect.lua:inspect", "v3.1.2")
 
 local hw = Deps("lib/hw")
 local TablePrinter = Deps("lib/table_printer")
