@@ -19,7 +19,6 @@ RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
 
 local ItemTypeRegistry = class("ItemTypeRegistry")
-binser.registerClass(ItemTypeRegistry)
 function ItemTypeRegistry:initialize()
     self.entries = {}
     self.lookup = {}
@@ -46,6 +45,7 @@ function ItemTypeRegistry._deserialize(entries, lookup)
     registry.lookup = lookup
     return registry
 end
+binser.registerClass(ItemTypeRegistry)
 local item_type_registry = ItemTypeRegistry:new()
 
 DB = class("DB")
