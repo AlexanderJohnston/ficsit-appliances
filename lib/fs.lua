@@ -36,7 +36,6 @@ function fs.read_all(path)
         if buf ~= nil then
             all = all .. buf
         end
-        print("read: ", buf)
     until buf == nil
     file:close()
     return all
