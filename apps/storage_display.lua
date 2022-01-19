@@ -20,6 +20,7 @@ YELLOW = {1, 1, 0, 1}
 
 DB = class("DB")
 binser.registerClass(DB)
+DB._template = {"entries"}
 function DB:initialize()
     self.entries = {}
 end
@@ -38,6 +39,11 @@ end
 
 DBEntry = class("DBEntry")
 binser.registerClass(DBEntry)
+DBEntry._template = {
+    "count",
+    "storage_capacity",
+    item_type = {"name", "max"}
+}
 function DBEntry:initialize(o)
     self.item_type = o.item_type
     self.count = 0
@@ -60,6 +66,7 @@ end
 
 History = class("History")
 binser.registerClass(History)
+History._template = {"entries", "retention", "frequency"}
 
 function History:initialize(o)
     self.entries = {}
@@ -118,6 +125,7 @@ end
 
 HistoryEntry = class("HistoryEntry")
 binser.registerClass(HistoryEntry)
+HistoryEntry._template = {"time", "db", "duration"}
 
 function HistoryEntry:initialize(o)
     self.time = time.timestamp()
