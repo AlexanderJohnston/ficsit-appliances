@@ -32,7 +32,7 @@ function fs.read_all(path)
     local all, buf = "", ""
     local file = fs.open(path, "r")
     repeat
-        buf = file:read(math.huge)
+        buf = file:read(0x10000)
         if buf ~= nil then
             all = all .. buf
         end
