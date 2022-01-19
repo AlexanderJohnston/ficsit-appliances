@@ -13,7 +13,7 @@ GREEN = {0, 1, 0, 1}
 RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
 
-CONFIG = CONFIG or CONFIG = {
+CONFIG = CONFIG or CONFIG {
     main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
     history_file = "/storage_display/history.binser",
     retention = 650,
