@@ -378,12 +378,12 @@ local function main()
 
     local history = nil
     if fs.exists(CONFIG.history_file) then
-        local status, registry, history_or_error = pcall(load_history)
+        local status, registry_or_error, new_history = pcall(load_history)
         if status then
-            history = history_or_error
-            item_type_registry = registry
+            item_type_registry = registry_or_error
+            history = new_history
         else
-            print("Error loading history: " .. history_or_error)
+            print("Error loading history: " .. registry_or_error)
         end
     end
     if history == nil then
