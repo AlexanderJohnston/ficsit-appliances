@@ -139,7 +139,7 @@ local function count_items(db, container)
                 if db_entry == nil then
                     db_entry = db:entry(stack.item.type)
                 elseif db_entry.item_type.name ~= stack.item.type.name then
-                    computer.panic("ERROR: multiple items in container " .. container.getHash() .. " inventory " ..
+                    computer.panic("ERROR: multiple items in container " .. container:getHash() .. " inventory " ..
                                        inventory.getHash())
                 end
                 db_entry:record_items(stack.count)
