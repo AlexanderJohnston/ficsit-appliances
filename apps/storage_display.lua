@@ -141,10 +141,10 @@ function History:last()
     return self.entries[#self.entries]
 end
 
-function History.static._serialize()
+function History:_serialize()
     return {}
 end
-function History.static._deserialize()
+function History:_deserialize()
     return History:new{}
 end
 binser.registerClass(History)
