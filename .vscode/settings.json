@@ -1,0 +1,10 @@
+{
+    "Lua.diagnostics.globals": [
+        "computer",
+        "component",
+        "findClass",
+        "event",
+        "filesystem",
+        "CONFIG"
+    ]
+}
