@@ -405,10 +405,8 @@ local function load_history()
     return registry, history
 end
 
-local history_saving_in_progress = false
 local history_saving_coro = coroutine.create(function(registry, history)
     while true do
-        history_saving_in_progress = true
 
         local timer = time.timer()
         local content = binser.serialize(registry, history)
@@ -419,13 +417,12 @@ local history_saving_coro = coroutine.create(function(registry, history)
         fs.write_all(CONFIG.history_file, content)
         print("Wrote " .. #content .. " bytes to " .. CONFIG.history_file .. " in " .. timer() .. "ms")
 
-        history_saving_in_progress = false
         registry, history = coroutine.yield()
     end
 end)
 
 local function save_history(registry, history)
-    if history_saving_in_progress then
+    if coroutine.status(history_saving_coro) == "running" then
         print("Previous history save in progress, ignoring request")
         return
     end
