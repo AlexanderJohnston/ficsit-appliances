@@ -44,7 +44,7 @@ function EntryBuilder:record(productivity, inventories)
 end
 function EntryBuilder:build()
     local sum_productivity = 0
-    for _, productivity in self.productivities do
+    for _, productivity in pairs(self.productivities) do
         sum_productivity = sum_productivity + productivity
     end
     return {
