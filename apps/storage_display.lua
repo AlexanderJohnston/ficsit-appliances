@@ -169,7 +169,8 @@ function History._deserialize(frequency, retention, entries)
     for i, ohe in pairs(entries) do
         local he = HistoryEntry:new{
             time = ohe.time,
-            duration = ohe.duration
+            duration = ohe.duration,
+            db = DB:new()
         }
         for j, odbe in pairs(ohe.db) do
             local dbe = DBEntry:new{
