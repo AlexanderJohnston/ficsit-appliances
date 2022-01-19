@@ -1,12 +1,13 @@
 local fs = Deps("lib/fs")
-local json = Deps("rxi/json.lua:json", "v0.1.2")
+local binser = Deps("bakpakin/binser:binser", "0.0-8")
+local class = Deps("kikito:middleclass/middleclass", "v4.1.1")
 local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
 
 CONFIG = {
     main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
-    history_file = "/storage_display/history.json"
+    history_file = "/storage_display/history.binser"
 }
 
 BLACK = {0, 0, 0, 1}
@@ -17,19 +18,10 @@ GREEN = {0, 1, 0, 1}
 RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
 
-DB = {}
-DB.__index = DB
-function DB:new(o)
-    o = o or {
-        entries = {}
-    }
-
-    for i, entry in pairs(o.entries) do
-        o.entries[i] = DBEntry:new(entry)
-    end
-
-    setmetatable(o, self)
-    return o
+DB = class("DB")
+binser.registerClass(DB)
+function DB:initialize()
+    self.entries = {}
 end
 
 function DB:entry(item_type)
@@ -44,21 +36,12 @@ function DB:entry(item_type)
     return self.entries[item_type.name]
 end
 
-function DB:to_json()
-    return {
-        entries = self.entries
-    }
-end
-
-DBEntry = {}
-DBEntry.__index = DBEntry
-function DBEntry:new(o)
-    o = o or {}
-    o.item_type = o.item_type or nil
-    o.count = o.count or 0
-    o.storage_capacity = o.storage_capacity or 0
-    setmetatable(o, self)
-    return o
+DBEntry = class("DBEntry")
+binser.registerClass(DBEntry)
+function DBEntry:initialize(item_type)
+    self.item_type = item_type
+    self.count = 0
+    self.storage_capacity = 0
 end
 
 function DBEntry:record_items(count)
@@ -75,28 +58,12 @@ function DBEntry:get_fill_percent()
     return math.floor(self.count / self.storage_capacity * 100)
 end
 
-function DBEntry:to_json()
-    return {
-        item_type = self.item_type,
-        count = self.count,
-        storage_capacity = self.storage_capacity
-    }
-end
+History = class("History")
+binser.registerClass(History)
 
-History = {}
-History.__index = History
-function History:new(o)
-    o = o or {}
-    o.entries = o.entries or {}
-
-    for i, entry in pairs(o.entries) do
-        o.entries[i] = HistoryEntry:new(entry)
-    end
-
-    o.retention = o.retention or 300
-    o.frequency = o.frequency or 5
-    setmetatable(o, self)
-    return o
+function History:initialize(o)
+    self.retention = o.retention or 300
+    self.frequency = o.frequency or 5
 end
 
 function History:record(db, duration)
@@ -148,45 +115,17 @@ function History:last()
     return self.entries[#self.entries]
 end
 
-function History:to_json()
-    local entries = {}
-    for _, entry in pairs(self.entries) do
-        table.insert(entries, entry:to_json())
-    end
+HistoryEntry = class("HistoryEntry")
+binser.registerClass(HistoryEntry)
 
-    return {
-        entries = entries,
-        retention = self.retention,
-        frequency = self.frequency
-    }
-end
-
-HistoryEntry = {}
-HistoryEntry.__index = HistoryEntry
-function HistoryEntry:new(o)
-    o = o or {}
-    o.db = o.db or nil
-
-    if o.db then
-        o.db = DB:new(o.db)
-    end
-
-    o.time = o.time or time.timestamp()
-    o.duration = o.duration or nil
-    setmetatable(o, self)
-    return o
+function HistoryEntry:initialize(duration)
+    self.db = DB:new()
+    self.time = time.timestamp()
+    self.duration = duration
 end
 
 function HistoryEntry:age()
     return math.floor(time.timestamp() - self.time)
-end
-
-function HistoryEntry:to_json()
-    return {
-        db = self.db:to_json(),
-        time = self.time,
-        duration = self.duration
-    }
 end
 
 local function count_items(db, container)
@@ -211,24 +150,18 @@ local function count_items(db, container)
     end
 end
 
-TablePrinter = {}
-TablePrinter.__index = TablePrinter
-function TablePrinter:new(headings)
-    local o = {
-        headings = {
-            cells = headings
-        },
-        rows = {},
-        rowcolors = {},
-        widths = {}
+TablePrinter = class("TablePrinter")
+function TablePrinter:initialize(headings)
+    self.headings = {
+        cells = headings
     }
-    setmetatable(o, self)
+    self.rows = {}
+    self.rowcolors = {}
+    self.widths = {}
 
     for i, heading in pairs(headings) do
-        o.widths[i] = #heading
+        self.widths[i] = #heading
     end
-
-    return o
 end
 
 function TablePrinter:sort()
@@ -391,7 +324,7 @@ end
 
 local function load_history()
     local content = fs.read_all(CONFIG.history_file)
-    local history = History:new(json.decode(content))
+    local history = History:new(binser.deserialize(content))
     print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
     return history
 end
@@ -452,7 +385,7 @@ local function main()
             snapshot(history, containers)
             last_time_to_next_snapshot = time_to_next_snapshot
             fs.mkdir_p(fs.dirname(CONFIG.history_file))
-            fs.write_all(CONFIG.history_file, json.encode(history))
+            fs.write_all(CONFIG.history_file, binser.serialize(history))
             dirty = true
         end
 
