@@ -19,7 +19,6 @@ RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
 
 local ItemTypeRegistry = class("ItemTypeRegistry")
-ItemTypeRegistry._template = {"entries", "lookup"}
 binser.registerClass(ItemTypeRegistry)
 function ItemTypeRegistry:initialize()
     self.entries = {}
@@ -38,10 +37,18 @@ end
 function ItemTypeRegistry:get(index)
     return self.entries[index]
 end
+function ItemTypeRegistry:_serialize()
+    return self.entries, self.lookup
+end
+function ItemTypeRegistry._deserialize(entries, lookup)
+    local registry = ItemTypeRegistry()
+    registry.entries = entries
+    registry.lookup = lookup
+    return registry
+end
 local item_type_registry = ItemTypeRegistry:new()
 
 DB = class("DB")
-DB._template = {"entries"}
 function DB:initialize()
     self.entries = {}
 end
@@ -58,7 +65,6 @@ end
 binser.registerClass(DB)
 
 DBEntry = class("DBEntry")
-DBEntry._template = {"count", "storage_capacity", "item_type_index"}
 function DBEntry:initialize(o)
     self.item_type_index = o.item_type_index
     self.count = 0
@@ -85,7 +91,6 @@ end
 binser.registerClass(DBEntry)
 
 History = class("History")
-History._template = {"entries", "retention", "frequency"}
 function History:initialize(o)
     self.entries = {}
     self.retention = o.retention or 300
@@ -187,7 +192,6 @@ end
 binser.registerClass(History)
 
 HistoryEntry = class("HistoryEntry")
-HistoryEntry._template = {"time", "db", "duration"}
 function HistoryEntry:initialize(o)
     self.time = time.timestamp()
     self.db = o.db
