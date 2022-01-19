@@ -342,20 +342,27 @@ local HistoryDumper = class("HistoryDumper")
 function HistoryDumper:initialize(o)
     self.history = o.history
     self.path = o.path
-    self.coro = nil
+    self.working = false
+    self.coro = coroutine.create(self._do_dump)
 end
-function HistoryDumper:dump()
-    if self.coro ~= nil then
-        return
-    end
-    local that = self
-    self.coro = coroutine.create(function()
+
+function HistoryDumper:_do_dump()
+    while true do
+        if self.working then
+            return
+        end
+        self.working = true
         local timer = time.timer()
-        fs.mkdir_p(fs.dirname(that.path))
-        fs.write_all(that.path, binser.serialize(that.history))
-        that.coro = nil
-        print("Dumped history to " .. that.path .. " in " .. timer() .. " ms")
-    end)
+        fs.mkdir_p(fs.dirname(self.path))
+        fs.write_all(self.path, binser.serialize(self.history))
+        print("Dumped history to " .. self.path .. " in " .. timer() .. " ms")
+        self.working = false
+        coroutine.yield()
+    end
+end
+
+function HistoryDumper:dump()
+    coroutine.resume(self.coro, self)
 end
 
 local function main()
