@@ -162,7 +162,7 @@ function History:_serialize()
     return raw_history_entries
 end
 function History._deserialize(raw_history_entries)
-    local now = computer.millis()
+    local now = computer.millis() / 1000
     local last = raw_history_entries[#raw_history_entries][1]
 
     local h = History:new()
