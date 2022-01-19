@@ -24,7 +24,7 @@ function DB:new(o)
         entries = {}
     }
 
-    for i, entry in ipairs(o.entries) do
+    for i, entry in pairs(o.entries) do
         o.entries[i] = DBEntry:new(entry)
     end
 
@@ -89,7 +89,7 @@ function History:new(o)
     o = o or {}
     o.entries = o.entries or {}
 
-    for i, entry in ipairs(o.entries) do
+    for i, entry in pairs(o.entries) do
         o.entries[i] = HistoryEntry:new(entry)
     end
 
@@ -150,7 +150,7 @@ end
 
 function History:to_json()
     local entries = {}
-    for _, entry in ipairs(self.entries) do
+    for _, entry in pairs(self.entries) do
         table.insert(entries, entry:to_json())
     end
 
@@ -191,7 +191,7 @@ end
 
 local function count_items(db, container)
     local inventories = container:getInventories()
-    for _, inventory in ipairs(inventories) do
+    for _, inventory in pairs(inventories) do
         local db_entry = nil
         for nStack = 0, inventory.size - 1, 1 do
             local stack = inventory:getStack(nStack)
@@ -224,7 +224,7 @@ function TablePrinter:new(headings)
     }
     setmetatable(o, self)
 
-    for i, heading in ipairs(headings) do
+    for i, heading in pairs(headings) do
         o.widths[i] = #heading
     end
 
@@ -239,11 +239,11 @@ end
 
 function TablePrinter:insert(color, row)
     local row_str = {}
-    for _, col in ipairs(row) do
+    for _, col in pairs(row) do
         table.insert(row_str, tostring(col))
     end
 
-    for i, cell in ipairs(row_str) do
+    for i, cell in pairs(row_str) do
         if self.widths[i] == nil or #cell > self.widths[i] then
             self.widths[i] = #cell
         end
@@ -258,7 +258,7 @@ end
 function TablePrinter:align_columns(row)
     local padding
     local retval = {}
-    for j, cell in ipairs(row) do
+    for j, cell in pairs(row) do
         padding = self.widths[j] - #cell
         table.insert(retval, string.rep(" ", padding) .. " " .. cell .. " ")
     end
@@ -286,7 +286,7 @@ end
 function TablePrinter:format_row(y, highlight, row)
     local retval = {}
     local x = 1
-    for _, cell in ipairs(self:align_columns(row.cells)) do
+    for _, cell in pairs(self:align_columns(row.cells)) do
         local fg, bg = self:colors({x, y, #cell}, highlight)
         table.insert(retval, {cell, fg, bg})
         x = x + #cell
@@ -297,7 +297,7 @@ end
 function TablePrinter:format(highlight)
     local retval = {}
     table.insert(retval, self:format_row(0, highlight, self.headings))
-    for y, row in ipairs(self.rows) do
+    for y, row in pairs(self.rows) do
         table.insert(retval, self:format_row(y, highlight, row))
     end
     return retval
@@ -317,7 +317,7 @@ local function display(history, highlight, gpu, status)
     local history_entry = history:last()
     if history_entry ~= nil then
         local db = history_entry.db
-        for _, entry in ipairs(db.entries) do
+        for _, entry in pairs(db.entries) do
             local fill_percent = entry:get_fill_percent()
             local rate_10min = history:rate_per_minute(entry.item_type, 600)
             local color
@@ -338,9 +338,9 @@ local function display(history, highlight, gpu, status)
         table_printer:sort()
 
         local rows = table_printer:format(highlight)
-        for _, row in ipairs(rows) do
+        for _, row in pairs(rows) do
             local this_width = 0
-            for _, cell in ipairs(row) do
+            for _, cell in pairs(row) do
                 this_width = this_width + #cell[1]
             end
             if this_width > width then
@@ -352,9 +352,9 @@ local function display(history, highlight, gpu, status)
         gpu:setForeground(table.unpack(WHITE))
         gpu:setBackground(table.unpack(BLACK))
         gpu:fill(0, 0, width, height, "")
-        for y, row in ipairs(rows) do
+        for y, row in pairs(rows) do
             local x = 0
-            for _, cellspec in ipairs(row) do
+            for _, cellspec in pairs(row) do
                 local cell, fg, bg = table.unpack(cellspec)
                 gpu:setForeground(table.unpack(fg))
                 gpu:setBackground(table.unpack(bg))
@@ -373,7 +373,7 @@ end
 local function snapshot(history, containers)
     local start = computer.millis()
     local db = DB:new()
-    for _, container in ipairs(containers) do
+    for _, container in pairs(containers) do
         count_items(db, container)
     end
     history:record(db, computer.millis() - start)
