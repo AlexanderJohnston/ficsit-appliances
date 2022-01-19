@@ -93,7 +93,7 @@ end
 
 local function main()
     local gpu = hw.gpu()
-    local main_display = component.proxy(component.findComponent(CONFIG.main_display))
+    local main_display = component.proxy(component.findComponent(CONFIG.main_display)[1])
     gpu:bindScreen(main_display)
 
     local table_printer = TablePrinter:new{
