@@ -26,6 +26,7 @@ function DB:initialize()
 end
 
 function DB:entry(item_type)
+    print(item_type:getType().name)
     if self.entries[item_type.name] == nil then
         self.entries[item_type.name] = DBEntry:new{
             item_type = {
