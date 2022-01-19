@@ -422,8 +422,8 @@ local function main()
     end
     if history == nil then
         history = History:new{
-            retention = 900,
-            frequency = 5
+            retention = CONFIG.retention,
+            frequency = CONFIG.frequency
         }
         print("Created new history")
     end
