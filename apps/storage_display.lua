@@ -329,9 +329,12 @@ end
 local function load_history()
     local timer = time.timer()
     local content = fs.read_all(CONFIG.history_file)
+    print("Read " .. CONFIG.history_file .. " in " .. timer() .. "ms")
+
+    timer = time.timer()
     local history = binser.deserializeN(content)
-    print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries in " .. timer() ..
-              "ms")
+    print("Deserialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
+
     return history
 end
 
