@@ -70,8 +70,8 @@ end
 DBEntry = class("DBEntry")
 function DBEntry:initialize(o)
     self.item_type_index = o.item_type_index
-    self.count = 0
-    self.storage_capacity = 0
+    self.count = o.count or 0
+    self.storage_capacity = o.storage_capacity or 0
 end
 
 function DBEntry:record_items(count)
