@@ -7,7 +7,9 @@ local hw = Deps("lib/hw")
 
 CONFIG = {
     main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
-    history_file = "/storage_display/history.binser"
+    history_file = "/storage_display/history.binser",
+    retention = 900,
+    frequency = 30
 }
 
 BLACK = {0, 0, 0, 1}
@@ -37,12 +39,14 @@ function ItemTypeRegistry:get(index)
     return self.entries[index]
 end
 function ItemTypeRegistry:_serialize()
-    return self.entries, self.lookup
+    return self.entries
 end
-function ItemTypeRegistry._deserialize(entries, lookup)
-    local registry = ItemTypeRegistry()
+function ItemTypeRegistry._deserialize(entries)
+    local registry = ItemTypeRegistry:new()
     registry.entries = entries
-    registry.lookup = lookup
+    for i, entry in pairs(entries) do
+        registry.lookup[entry.name] = i
+    end
     return registry
 end
 binser.registerClass(ItemTypeRegistry)
@@ -62,7 +66,6 @@ function DB:entry(item_type)
     end
     return self.entries[item_type_index]
 end
-binser.registerClass(DB)
 
 DBEntry = class("DBEntry")
 function DBEntry:initialize(o)
@@ -88,7 +91,6 @@ end
 function DBEntry:item_type()
     return item_type_registry:get(self.item_type_index)
 end
-binser.registerClass(DBEntry)
 
 History = class("History")
 function History:initialize(o)
@@ -147,32 +149,32 @@ function History:last()
 end
 
 function History:_serialize()
-    local entries = {}
-    for i, he in pairs(self.entries) do
-        local dbentries = {}
-        for j, dbe in pairs(he.db.entries) do
-            dbentries[j] = {dbe.count, dbe.storage_capacity, dbe.item_type_index}
+    local raw_history_entries = {}
+    for i, history_entry in pairs(self.entries) do
+        local raw_db_entries = {}
+        for j, db_entry in pairs(history_entry.db.entries) do
+            raw_db_entries[j] = {db_entry.count, db_entry.storage_capacity, db_entry.item_type_index}
         end
-        entries[i] = {he.time, he.duration, dbentries}
+        raw_history_entries[i] = {history_entry.time, history_entry.duration, raw_db_entries}
     end
-    return self.frequency, self.retention, entries
+    return self.frequency, self.retention, raw_history_entries
 end
-function History._deserialize(frequency, retention, entries)
+function History._deserialize(frequency, retention, raw_history_entries)
     local h = History:new{
         frequency = frequency,
         retention = retention
     }
-    for i, ohe in pairs(entries) do
+    for i, raw_history_entry in pairs(raw_history_entries) do
         local he = HistoryEntry:new{
-            time = ohe[1],
-            duration = ohe[2],
+            time = raw_history_entry[1],
+            duration = raw_history_entry[2],
             db = DB:new()
         }
-        for j, odbe in pairs(ohe[3]) do
+        for j, raw_db_entry in pairs(raw_history_entry[3]) do
             local dbe = DBEntry:new{
-                count = odbe[1],
-                storage_capacity = odbe[2],
-                item_type_index = odbe[3]
+                count = raw_db_entry[1],
+                storage_capacity = raw_db_entry[2],
+                item_type_index = raw_db_entry[3]
             }
             he.db.entries[j] = dbe
         end
@@ -215,7 +217,6 @@ local function count_items(db, container)
         end
     end
 end
-binser.registerClass(HistoryEntry)
 
 TablePrinter = class("TablePrinter")
 function TablePrinter:initialize(o)
