@@ -100,8 +100,8 @@ end
 History = class("History")
 function History:initialize(o)
     self.entries = {}
-    self.retention = o.retention or 300
-    self.frequency = o.frequency or 5
+    self.retention = o.retention or CONFIG.retention
+    self.frequency = o.frequency or CONFIG.frequency
 end
 
 function History:record(db, duration)
@@ -162,13 +162,10 @@ function History:_serialize()
         end
         raw_history_entries[i] = {history_entry.time, history_entry.duration, raw_db_entries}
     end
-    return self.frequency, self.retention, raw_history_entries
+    return raw_history_entries
 end
-function History._deserialize(frequency, retention, raw_history_entries)
-    local h = History:new{
-        frequency = frequency,
-        retention = retention
-    }
+function History._deserialize(raw_history_entries)
+    local h = History:new()
     for i, raw_history_entry in pairs(raw_history_entries) do
         local history_entry = HistoryEntry:new{
             time = raw_history_entry[1],
