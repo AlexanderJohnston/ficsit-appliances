@@ -12,7 +12,8 @@ end
 --    A game day consists of 24 game hours, a game hour consists of 60 game minutes, a game minute consists of 60 game seconds.
 -- https://satisfactory.fandom.com/wiki/World says
 --    One day on Massage-2(A-B)b lasts for 50 real-world minutes
-local REAL_TO_GAME = 60 * 24 / 50
+-- https://github.com/Panakotta00/FicsIt-Networks/issues/200 for why this is not 28.8
+local REAL_TO_GAME = 10.85
 
 function time.game_to_real(duration)
     return duration / REAL_TO_GAME
@@ -33,9 +34,6 @@ function time.real_seconds_save_age()
 end
 
 function time.timestamp()
-    --- Best monothonic, second-resolution timestamp we have
-    -- ideally this would be time.real_seconds_save_age(),
-    -- but that's borked currently due to https://github.com/Panakotta00/FicsIt-Networks/issues/200
     return time.real_seconds_since_boot()
 end
 
