@@ -165,20 +165,20 @@ function History._deserialize(frequency, retention, raw_history_entries)
         retention = retention
     }
     for i, raw_history_entry in pairs(raw_history_entries) do
-        local he = HistoryEntry:new{
+        local history_entry = HistoryEntry:new{
             time = raw_history_entry[1],
             duration = raw_history_entry[2],
             db = DB:new()
         }
         for j, raw_db_entry in pairs(raw_history_entry[3]) do
-            local dbe = DBEntry:new{
+            local db_entry = DBEntry:new{
                 count = raw_db_entry[1],
                 storage_capacity = raw_db_entry[2],
                 item_type_index = raw_db_entry[3]
             }
-            he.db.entries[j] = dbe
+            history_entry.db.entries[j] = db_entry
         end
-        h.entries[i] = he
+        h.entries[i] = history_entry
     end
     return h
 end

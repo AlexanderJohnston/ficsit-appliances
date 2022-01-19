@@ -34,7 +34,7 @@ function time.real_seconds_save_age()
 end
 
 function time.timestamp()
-    return time.real_seconds_since_boot()
+    return time.real_seconds_save_age()
 end
 
 function time.timer()
