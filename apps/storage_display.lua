@@ -162,14 +162,15 @@ function History:_serialize()
     return raw_history_entries
 end
 function History._deserialize(raw_history_entries)
-    -- Timekeeping is messy (see https://github.com/Panakotta00/FicsIt-Networks/issues/200),
-    -- so pretend that the last snapshot happened NOW.
-    local time_offset = computer.millis() - raw_history_entries[#raw_history_entries][1]
+    local now = computer.millis()
+    local last = raw_history_entries[#raw_history_entries][1]
 
     local h = History:new()
     for i, raw_history_entry in pairs(raw_history_entries) do
         local history_entry = HistoryEntry:new{
-            time = raw_history_entry[1] + time_offset,
+            -- Timekeeping is messy (see https://github.com/Panakotta00/FicsIt-Networks/issues/200),
+            -- so pretend that the last snapshot happened NOW.
+            time = now - (last - raw_history_entry[1]),
             duration = raw_history_entry[2],
             db = DB:new()
         }
