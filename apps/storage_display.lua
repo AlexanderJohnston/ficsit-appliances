@@ -149,20 +149,11 @@ end
 function History:_serialize()
     local entries = {}
     for i, he in pairs(self.entries) do
-        local ohe = {
-            time = he.time,
-            duration = he.duration,
-            db = {}
-        }
+        local dbentries = {}
         for j, dbe in pairs(he.db.entries) do
-            local odbe = {
-                count = dbe.count,
-                storage_capacity = dbe.storage_capacity,
-                item_type_index = dbe.item_type_index
-            }
-            ohe.db[j] = odbe
+            dbentries[j] = {dbe.count, dbe.storage_capacity, dbe.item_type_index}
         end
-        entries[i] = ohe
+        entries[i] = {he.time, he.duration, dbentries}
     end
     return self.frequency, self.retention, entries
 end
@@ -173,15 +164,15 @@ function History._deserialize(frequency, retention, entries)
     }
     for i, ohe in pairs(entries) do
         local he = HistoryEntry:new{
-            time = ohe.time,
-            duration = ohe.duration,
+            time = ohe[1],
+            duration = ohe[2],
             db = DB:new()
         }
-        for j, odbe in pairs(ohe.db) do
+        for j, odbe in pairs(ohe[3]) do
             local dbe = DBEntry:new{
-                count = odbe.count,
-                storage_capacity = odbe.storage_capacity,
-                item_type_index = odbe.item_type_index
+                count = odbe[1],
+                storage_capacity = odbe[2],
+                item_type_index = odbe[3]
             }
             he.db.entries[j] = dbe
         end
