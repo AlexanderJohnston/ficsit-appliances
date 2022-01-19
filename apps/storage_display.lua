@@ -5,13 +5,6 @@ local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
 
-CONFIG = {
-    main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
-    history_file = "/storage_display/history.binser",
-    retention = 900,
-    frequency = 30
-}
-
 BLACK = {0, 0, 0, 1}
 WHITE = {1, 1, 1, 1}
 GRAY30 = {0.3, 0.3, 0.3, 1}
@@ -19,6 +12,18 @@ GRAY50 = {0.5, 0.5, 0.5, 1}
 GREEN = {0, 1, 0, 1}
 RED = {1, 0, 0, 1}
 YELLOW = {1, 1, 0, 1}
+
+CONFIG = CONFIG or CONFIG = {
+    main_display = "7FC05BBE4B398CD7430CFDAF66DDCC17",
+    history_file = "/storage_display/history.binser",
+    retention = 650,
+    frequency = 25,
+    rates = {
+        ["30s"] = 30,
+        ["5m"] = 300,
+        ["10m"] = 600
+    }
+}
 
 local ItemTypeRegistry = class("ItemTypeRegistry")
 function ItemTypeRegistry:initialize()
@@ -312,32 +317,43 @@ local function display_status(gpu, y, status)
 end
 
 local function display(history, highlight, gpu, status)
+    local headings = {"NAME", "COUNT", "CAPACITY", "FILL%"}
+    for rate_name, _ in pairs(CONFIG.rates) do
+        table.insert(headings, "RATE@" .. rate_name)
+    end
     local table_printer = TablePrinter:new{
-        headings = {"NAME", "COUNT", "CAPACITY", "FILL%", "RATE@15S", "RATE@1M", "RATE@10M"}
+        headings = headings
     }
     local width = #status
+
+    local max_rate = 0
+    for _, rate in pairs(CONFIG.rates) do
+        if rate > max_rate then
+            max_rate = rate
+        end
+    end
 
     local history_entry = history:last()
     if history_entry ~= nil then
         local db = history_entry.db
         for _, entry in pairs(db.entries) do
             local fill_percent = entry:get_fill_percent()
-            local rate_10min = history:rate_per_minute(entry:item_type(), 600)
+            local rate_longest = history:rate_per_minute(entry:item_type(), max_rate)
             local color
             if fill_percent >= 99 then
                 color = GREEN
-            elseif fill_percent > 75 and rate_10min > 0 then
+            elseif fill_percent > 75 and rate_longest > 0 then
                 color = WHITE
-            elseif rate_10min > 0 then
+            elseif rate_longest > 0 then
                 color = YELLOW
             else
                 color = RED
             end
-            table_printer:insert(color,
-                {entry:item_type().name, entry.count, entry.storage_capacity, entry:get_fill_percent(),
-                 string.format("%s/m", history:rate_per_minute(entry:item_type(), 15)),
-                 string.format("%s/m", history:rate_per_minute(entry:item_type(), 60)),
-                 string.format("%s/m", rate_10min)})
+            local cells = {entry:item_type().name, entry.count, entry.storage_capacity, entry:get_fill_percent()}
+            for _, rate in pairs(CONFIG.rates) do
+                table.insert(cells, string.format("%s/m", entry:rate_per_minute(entry:item_type(), rate)))
+            end
+            table_printer:insert(color, cells)
         end
         table_printer:sort()
 
