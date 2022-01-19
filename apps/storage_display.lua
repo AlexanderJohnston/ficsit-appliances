@@ -161,7 +161,7 @@ function History:_serialize()
     end
     return self.frequency, self.retention, entries
 end
-function History:_deserialize(frequency, retention, entries)
+function History._deserialize(frequency, retention, entries)
     local h = History:new{
         frequency = frequency,
         retention = retention
