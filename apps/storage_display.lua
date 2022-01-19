@@ -308,12 +308,12 @@ local function display(history, highlight, gpu, status)
 end
 
 local function snapshot(history, containers)
-    local start = computer.millis()
+    local timer = time.timer()
     local db = DB:new()
     for _, container in pairs(containers) do
         count_items(db, container)
     end
-    history:record(db, computer.millis() - start)
+    history:record(db, timer())
 end
 
 local function highlight_changed(old, new)
@@ -327,10 +327,32 @@ local function highlight_changed(old, new)
 end
 
 local function load_history()
+    local timer = time.timer()
     local content = fs.read_all(CONFIG.history_file)
     local history = binser.deserializeN(content)
-    print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
+    print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries in " .. timer() ..
+              "ms")
     return history
+end
+
+local HistoryDumper = class("HistoryDumper")
+function HistoryDumper:initialize(o)
+    self.history = o.history
+    self.path = o.path
+    self.coro = nil
+end
+function HistoryDumper:dump()
+    if self.coro ~= nil then
+        return
+    end
+    local that = self
+    self.coro = coroutine.create(function()
+        local timer = time.timer()
+        fs.mkdir_p(fs.dirname(that.path))
+        fs.write_all(that.path, binser.serialize(that.history))
+        that.coro = nil
+        print("Dumped history to " .. that.path .. " in " .. timer() .. " ms")
+    end)
 end
 
 local function main()
@@ -388,8 +410,6 @@ local function main()
         if time_to_next_snapshot <= 0 or force_update then
             snapshot(history, containers)
             last_time_to_next_snapshot = time_to_next_snapshot
-            fs.mkdir_p(fs.dirname(CONFIG.history_file))
-            fs.write_all(CONFIG.history_file, binser.serialize(history))
             dirty = true
         end
 

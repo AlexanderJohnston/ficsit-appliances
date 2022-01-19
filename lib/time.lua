@@ -37,4 +37,11 @@ function time.timestamp()
     return time.real_seconds_since_boot()
 end
 
+function time.timer()
+    local start = time.real_millis_since_boot()
+    return function()
+        return time.real_millis_since_boot() - start
+    end
+end
+
 return time
