@@ -408,13 +408,14 @@ end
 local history_saving_in_progress = false
 local history_saving_coro = coroutine.create(function(registry, history)
     while true do
-        fs.mkdir_p(fs.dirname(CONFIG.history_file))
         history_saving_in_progress = true
+
         local timer = time.timer()
         local content = binser.serialize(registry, history)
         print("Serialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
 
         timer = time.timer()
+        fs.mkdir_p(fs.dirname(CONFIG.history_file))
         fs.write_all(CONFIG.history_file, content)
         print("Wrote " .. #content .. " bytes to " .. CONFIG.history_file .. " in " .. timer() .. "ms")
 
@@ -425,6 +426,7 @@ end)
 
 local function save_history(registry, history)
     if history_saving_in_progress then
+        print("Previous history save in progress, ignoring request")
         return
     end
     coroutine.resume(history_saving_coro, registry, history)
