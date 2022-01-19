@@ -161,7 +161,7 @@ function TablePrinter:initialize(o)
     self.rowcolors = {}
     self.widths = {}
 
-    for i, heading in pairs(headings) do
+    for i, heading in pairs(self.headings.cells) do
         self.widths[i] = #heading
     end
 end
@@ -246,7 +246,9 @@ local function display_status(gpu, y, status)
 end
 
 local function display(history, highlight, gpu, status)
-    local table_printer = TablePrinter:new{headings={"NAME", "COUNT", "CAPACITY", "FILL%", "RATE@15S", "RATE@1M", "RATE@10M"}}
+    local table_printer = TablePrinter:new{
+        headings = {"NAME", "COUNT", "CAPACITY", "FILL%", "RATE@15S", "RATE@1M", "RATE@10M"}
+    }
     local width = #status
 
     local history_entry = history:last()
