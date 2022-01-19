@@ -22,7 +22,7 @@ function fs.dirname(path)
 end
 
 function fs.write_all(path, content)
-    local file = filesystem.open(path, "w")
+    local file = filesystem.open(path, "wb")
     file:write(content)
     file:close()
 end
@@ -30,7 +30,7 @@ end
 function fs.read_all(path)
     -- Work around https://github.com/Panakotta00/FicsIt-Networks/issues/201
     local all, buf = "", ""
-    local file = fs.open(path, "r")
+    local file = fs.open(path, "rb")
     repeat
         buf = file:read(0x10000)
         if buf ~= nil then
