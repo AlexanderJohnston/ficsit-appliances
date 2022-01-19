@@ -1,4 +1,5 @@
 local class = Deps("kikito/middleclass:middleclass", "v4.1.1")
+local inspect = Deps("kikito/inspect:inspect", "v3.1.2")
 
 local hw = Deps("lib/hw")
 local TablePrinter = Deps("lib/table_printer")
@@ -126,6 +127,7 @@ local function main()
         table_printer:insert(color, {name, entry.productivity, status_str})
     end
 
+    print(inspect(table_printer))
     table_printer:sort()
     table_printer:print(nil, gpu)
 end
