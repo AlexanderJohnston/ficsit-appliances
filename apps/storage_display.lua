@@ -467,7 +467,8 @@ local function main()
             fs.mkdir_p(fs.dirname(CONFIG.history_file))
             local content = binser.serialize(item_type_registry, history)
             fs.write_all(CONFIG.history_file, content)
-            print("Dumped " .. #content .. " bytes of history to " .. CONFIG.history_file .. " in " .. timer() .. " ms")
+            print("Dumped history (" .. #content .. " bytes, " .. #history.entries .. " entries) to " ..
+                      CONFIG.history_file .. " in " .. timer() .. " ms")
         end
 
         if dirty then
