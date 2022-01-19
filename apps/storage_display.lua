@@ -441,6 +441,7 @@ local function main()
             last_time_to_next_snapshot = time_to_next_snapshot
             fs.mkdir_p(fs.dirname(CONFIG.history_file))
             local f = fs.open(CONFIG.history_file, "w")
+            print(json.encode(history:to_json()))
             f:write(json.encode(history:to_json()))
             f:close()
             dirty = true
