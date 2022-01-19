@@ -329,7 +329,7 @@ end
 local function load_history()
     local timer = time.timer()
     local content = fs.read_all(CONFIG.history_file)
-    print("Read " .. CONFIG.history_file .. " in " .. timer() .. "ms")
+    print("Read " .. #content .. " bytes from " .. CONFIG.history_file .. " in " .. timer() .. "ms")
 
     timer = time.timer()
     local history = binser.deserializeN(content)
@@ -359,11 +359,6 @@ local function main()
         }
         print("Created new history")
     end
-
-    local history_dumper = HistoryDumper:new{
-        history = history,
-        path = CONFIG.history_file
-    }
 
     gpu:bindScreen(main_display)
     event.listen(gpu)
