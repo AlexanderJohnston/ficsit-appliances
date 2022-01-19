@@ -95,7 +95,8 @@ end
 
 History = class("History")
 function History:initialize(o)
-    self.entries = {}
+    o = o or {}
+    self.entries = o.entries or {}
     self.retention = o.retention or CONFIG.retention
     self.frequency = o.frequency or CONFIG.frequency
 end
