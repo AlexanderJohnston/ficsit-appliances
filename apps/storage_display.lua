@@ -1,6 +1,6 @@
 local fs = Deps("lib/fs")
 local binser = Deps("bakpakin/binser:binser", "0.0-8")
-local class = Deps("kikito/middleclass:middleclass", "v4.1.1")
+local class = Deps("Yonaba/30log:30log-clean", "30log-1.3.0-1")
 local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
@@ -21,7 +21,7 @@ YELLOW = {1, 1, 0, 1}
 local ItemTypeRegistry = class("ItemTypeRegistry")
 -- ItemTypeRegistry._template = {"entries", "lookup"}
 binser.registerClass(ItemTypeRegistry)
-function ItemTypeRegistry:initialize()
+function ItemTypeRegistry:init()
     self.entries = {}
     self.lookup = {}
 end
@@ -42,7 +42,7 @@ local item_type_registry = ItemTypeRegistry:new()
 
 DB = class("DB")
 DB._template = {"entries"}
-function DB:initialize()
+function DB:init()
     self.entries = {}
 end
 
@@ -59,7 +59,7 @@ binser.registerClass(DB)
 
 DBEntry = class("DBEntry")
 DBEntry._template = {"count", "storage_capacity", "item_type_index"}
-function DBEntry:initialize(o)
+function DBEntry:init(o)
     self.item_type_index = o.item_type_index
     self.count = 0
     self.storage_capacity = 0
@@ -86,7 +86,7 @@ binser.registerClass(DBEntry)
 
 History = class("History")
 History._template = {"entries", "retention", "frequency"}
-function History:initialize(o)
+function History:init(o)
     self.entries = {}
     self.retention = o.retention or 300
     self.frequency = o.frequency or 5
@@ -144,7 +144,7 @@ binser.registerClass(History)
 
 HistoryEntry = class("HistoryEntry")
 HistoryEntry._template = {"time", "db", "duration"}
-function HistoryEntry:initialize(o)
+function HistoryEntry:init(o)
     self.time = time.timestamp()
     self.db = o.db
     self.duration = o.duration
@@ -179,7 +179,7 @@ end
 binser.registerClass(HistoryEntry)
 
 TablePrinter = class("TablePrinter")
-function TablePrinter:initialize(o)
+function TablePrinter:init(o)
     self.headings = {
         cells = o.headings
     }
