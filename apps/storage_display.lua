@@ -114,7 +114,7 @@ function History:size()
 end
 
 function History:prune()
-    local cutoff = time.timestamp() - self.retention
+    local cutoff = computer.millis() / 1000 - self.retention
     local i = 1
     while i <= #self.entries do
         if self.entries[i].time < cutoff then
@@ -162,10 +162,14 @@ function History:_serialize()
     return raw_history_entries
 end
 function History._deserialize(raw_history_entries)
+    -- Timekeeping is messy (see https://github.com/Panakotta00/FicsIt-Networks/issues/200),
+    -- so pretend that the last snapshot happened NOW.
+    local time_offset = computer.millis() - raw_history_entries[#raw_history_entries][1]
+
     local h = History:new()
     for i, raw_history_entry in pairs(raw_history_entries) do
         local history_entry = HistoryEntry:new{
-            time = raw_history_entry[1],
+            time = raw_history_entry[1] - time_offset,
             duration = raw_history_entry[2],
             db = DB:new()
         }
@@ -185,13 +189,13 @@ binser.registerClass(History)
 
 HistoryEntry = class("HistoryEntry")
 function HistoryEntry:initialize(o)
-    self.time = time.timestamp()
+    self.time = o.time or computer.millis() / 1000
     self.db = o.db
     self.duration = o.duration
 end
 
 function HistoryEntry:age()
-    return math.floor(time.timestamp() - self.time)
+    return math.floor(computer.millis() / 1000 - self.time)
 end
 
 local function count_items(db, container)
