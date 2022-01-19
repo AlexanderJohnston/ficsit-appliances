@@ -365,7 +365,7 @@ local function load_history()
     print("Read " .. #content .. " bytes from " .. CONFIG.history_file .. " in " .. timer() .. "ms")
 
     timer = time.timer()
-    local registry, history = binser.deserializeN(content)
+    local registry, history = binser.deserializeN(content, 2)
     print("Deserialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
 
     return registry, history
