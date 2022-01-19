@@ -38,8 +38,8 @@ end
 
 DBEntry = class("DBEntry")
 binser.registerClass(DBEntry)
-function DBEntry:initialize(item_type)
-    self.item_type = item_type
+function DBEntry:initialize(o)
+    self.item_type = o.item_type
     self.count = 0
     self.storage_capacity = 0
 end
@@ -119,10 +119,10 @@ end
 HistoryEntry = class("HistoryEntry")
 binser.registerClass(HistoryEntry)
 
-function HistoryEntry:initialize(duration)
-    self.db = DB:new()
+function HistoryEntry:initialize(o)
     self.time = time.timestamp()
-    self.duration = duration
+    self.db = o.db
+    self.duration = o.duration
 end
 
 function HistoryEntry:age()
@@ -153,9 +153,9 @@ local function count_items(db, container)
 end
 
 TablePrinter = class("TablePrinter")
-function TablePrinter:initialize(headings)
+function TablePrinter:initialize(o)
     self.headings = {
-        cells = headings
+        cells = o.headings
     }
     self.rows = {}
     self.rowcolors = {}
@@ -246,7 +246,7 @@ local function display_status(gpu, y, status)
 end
 
 local function display(history, highlight, gpu, status)
-    local table_printer = TablePrinter:new{"NAME", "COUNT", "CAPACITY", "FILL%", "RATE@15S", "RATE@1M", "RATE@10M"}
+    local table_printer = TablePrinter:new{headings={"NAME", "COUNT", "CAPACITY", "FILL%", "RATE@15S", "RATE@1M", "RATE@10M"}}
     local width = #status
 
     local history_entry = history:last()
@@ -326,7 +326,7 @@ end
 
 local function load_history()
     local content = fs.read_all(CONFIG.history_file)
-    local history = History:new(binser.deserialize(content))
+    local history = binser.deserialize(content)
     print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
     return history
 end
