@@ -407,7 +407,6 @@ end
 
 local history_saving_coro = coroutine.create(function(registry, history)
     while true do
-
         local timer = time.timer()
         local content = binser.serialize(registry, history)
         print("Serialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
@@ -417,7 +416,7 @@ local history_saving_coro = coroutine.create(function(registry, history)
         fs.write_all(CONFIG.history_file, content)
         print("Wrote " .. #content .. " bytes to " .. CONFIG.history_file .. " in " .. timer() .. "ms")
 
-        registry, history = coroutine.yield()
+        _, registry, history = coroutine.yield()
     end
 end)
 
