@@ -375,11 +375,8 @@ local function highlight_changed(old, new)
 end
 
 local function load_history()
-    local f = fs.open(CONFIG.history_file, "r")
-    local content = f:read("*all")
-    print(content)
+    local content = fs.read_all(CONFIG.history_file)
     local history = History:new(json.decode(content))
-    f:close()
     print("Loaded history from " .. CONFIG.history_file .. " with " .. history:size() .. " entries.")
     return history
 end

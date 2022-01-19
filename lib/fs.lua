@@ -21,4 +21,24 @@ function fs.dirname(path)
     return string.match(path, "^(.*)/[^/]+$")
 end
 
+function fs.write_all(path, content)
+    local file = filesystem.open(path, "w")
+    file:write(content)
+    file:close()
+end
+
+function fs.read_all(path)
+    -- Work around https://github.com/Panakotta00/FicsIt-Networks/issues/201
+    local all, buf = "", ""
+    local file = fs.open(path, "r")
+    repeat
+        buf = file:read(math.huge)
+        if buf ~= nil then
+            all = all .. buf
+        end
+    until buf == nil
+    file:close()
+    return all
+end
+
 return fs
