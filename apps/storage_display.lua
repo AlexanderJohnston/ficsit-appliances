@@ -1,5 +1,5 @@
 local fs = Deps("lib/fs")
-local bitser = Deps("gvx:bitser/bitser", "v1.1")
+local bitser = Deps("gvx/bitser:bitser", "v1.1")
 local class = Deps("kikito/middleclass:middleclass", "v4.1.1")
 local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
