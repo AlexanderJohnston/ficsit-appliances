@@ -405,6 +405,31 @@ local function load_history()
     return registry, history
 end
 
+local history_saving_in_progress = false
+local history_saving_coro = coroutine.create(function(registry, history)
+    while true do
+        fs.mkdir_p(fs.dirname(CONFIG.history_file))
+        history_saving_in_progress = true
+        local timer = time.timer()
+        local content = binser.serialize(registry, history)
+        print("Serialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
+
+        timer = time.timer()
+        fs.write_all(CONFIG.history_file, content)
+        print("Wrote " .. #content .. " bytes to " .. CONFIG.history_file .. " in " .. timer() .. "ms")
+
+        history_saving_in_progress = false
+        registry, history = coroutine.yield()
+    end
+end)
+
+local function save_history(registry, history)
+    if history_saving_in_progress then
+        return
+    end
+    coroutine.resume(history_saving_coro, registry, history)
+end
+
 local function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     local gpu = hw.gpu()
@@ -462,13 +487,7 @@ local function main()
             snapshot(history, containers)
             last_time_to_next_snapshot = time_to_next_snapshot
             dirty = true
-
-            local timer = time.timer()
-            fs.mkdir_p(fs.dirname(CONFIG.history_file))
-            local content = binser.serialize(item_type_registry, history)
-            fs.write_all(CONFIG.history_file, content)
-            print("Dumped history (" .. #content .. " bytes, " .. #history.entries .. " entries) to " ..
-                      CONFIG.history_file .. " in " .. timer() .. " ms")
+            save_history(item_type_registry, history)
         end
 
         if dirty then
