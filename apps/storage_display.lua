@@ -338,30 +338,6 @@ local function load_history()
     return history
 end
 
-local HistoryDumper = class("HistoryDumper")
-function HistoryDumper:initialize(o)
-    self.history = o.history
-    self.path = o.path
-    self.working = false
-    self.coro = coroutine.create(self._do_dump)
-end
-
-function HistoryDumper:_do_dump()
-    if self.working then
-        return
-    end
-    self.working = true
-    local timer = time.timer()
-    fs.mkdir_p(fs.dirname(self.path))
-    fs.write_all(self.path, binser.serialize(self.history))
-    print("Dumped history to " .. self.path .. " in " .. timer() .. " ms")
-    self.working = false
-end
-
-function HistoryDumper:dump()
-    coroutine.resume(self.coro, self)
-end
-
 local function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     local gpu = hw.gpu()
@@ -421,9 +397,13 @@ local function main()
         end
         if time_to_next_snapshot <= 0 or force_update then
             snapshot(history, containers)
-            history_dumper:dump()
             last_time_to_next_snapshot = time_to_next_snapshot
             dirty = true
+
+            local timer = time.timer()
+            fs.mkdir_p(fs.dirname(CONFIG.history_file))
+            fs.write_all(CONFIG.history_file, binser.serialize(history))
+            print("Dumped history to " .. CONFIG.history_file .. " in " .. timer() .. " ms")
         end
 
         if dirty then
