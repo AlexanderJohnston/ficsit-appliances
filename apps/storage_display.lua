@@ -20,7 +20,7 @@ YELLOW = {1, 1, 0, 1}
 
 local ItemTypeRegistry = class("ItemTypeRegistry")
 binser.registerClass(ItemTypeRegistry)
-ItemTypeRegistry._template = {"entries", "lookup"}
+ItemTypeRegistry.static._template = {"entries", "lookup"}
 function ItemTypeRegistry:initialize()
     self.entries = {}
     self.lookup = {}
@@ -42,7 +42,7 @@ local item_type_registry = ItemTypeRegistry:new()
 
 DB = class("DB")
 binser.registerClass(DB)
-DB._template = {"entries"}
+DB.static._template = {"entries"}
 function DB:initialize()
     self.entries = {}
 end
@@ -59,7 +59,7 @@ end
 
 DBEntry = class("DBEntry")
 binser.registerClass(DBEntry)
-DBEntry._template = {"count", "storage_capacity", "item_type_index"}
+DBEntry.static._template = {"count", "storage_capacity", "item_type_index"}
 function DBEntry:initialize(o)
     self.item_type_index = o.item_type_index
     self.count = 0
@@ -86,7 +86,7 @@ end
 
 History = class("History")
 binser.registerClass(History)
-History._template = {"entries", "retention", "frequency"}
+History.static._template = {"entries", "retention", "frequency"}
 
 function History:initialize(o)
     self.entries = {}
@@ -145,7 +145,7 @@ end
 
 HistoryEntry = class("HistoryEntry")
 binser.registerClass(HistoryEntry)
-HistoryEntry._template = {"time", "db", "duration"}
+HistoryEntry.static._template = {"time", "db", "duration"}
 
 function HistoryEntry:initialize(o)
     self.time = time.timestamp()
