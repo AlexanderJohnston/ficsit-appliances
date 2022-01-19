@@ -1,6 +1,6 @@
 local fs = Deps("lib/fs")
 local binser = Deps("bakpakin/binser:binser", "0.0-8")
-local class = Deps("kikito:middleclass/middleclass", "v4.1.1")
+local class = Deps("kikito/middleclass:middleclass", "v4.1.1")
 local time = Deps("lib/time")
 local shellsort = Deps("third_party/shellsort")
 local hw = Deps("lib/hw")
