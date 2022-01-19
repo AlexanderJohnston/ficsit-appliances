@@ -347,18 +347,15 @@ function HistoryDumper:initialize(o)
 end
 
 function HistoryDumper:_do_dump()
-    while true do
-        if self.working then
-            return
-        end
-        self.working = true
-        local timer = time.timer()
-        fs.mkdir_p(fs.dirname(self.path))
-        fs.write_all(self.path, binser.serialize(self.history))
-        print("Dumped history to " .. self.path .. " in " .. timer() .. " ms")
-        self.working = false
-        coroutine.yield()
+    if self.working then
+        return
     end
+    self.working = true
+    local timer = time.timer()
+    fs.mkdir_p(fs.dirname(self.path))
+    fs.write_all(self.path, binser.serialize(self.history))
+    print("Dumped history to " .. self.path .. " in " .. timer() .. " ms")
+    self.working = false
 end
 
 function HistoryDumper:dump()
