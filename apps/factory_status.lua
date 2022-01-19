@@ -107,6 +107,7 @@ local function main()
     end
 
     for name, entry in pairs(builder:build()) do
+        print(name)
         local color
         if entry.productivity > 0.9 then
             color = colors.green
