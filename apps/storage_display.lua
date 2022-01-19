@@ -351,7 +351,7 @@ local function display(history, highlight, gpu, status)
             end
             local cells = {entry:item_type().name, entry.count, entry.storage_capacity, entry:get_fill_percent()}
             for _, rate in pairs(CONFIG.rates) do
-                table.insert(cells, string.format("%s/m", entry:rate_per_minute(entry:item_type(), rate)))
+                table.insert(cells, string.format("%s/m", history:rate_per_minute(entry:item_type(), rate)))
             end
             table_printer:insert(color, cells)
         end
