@@ -62,6 +62,7 @@ History = class("History")
 binser.registerClass(History)
 
 function History:initialize(o)
+    self.entries = {}
     self.retention = o.retention or 300
     self.frequency = o.frequency or 5
 end
