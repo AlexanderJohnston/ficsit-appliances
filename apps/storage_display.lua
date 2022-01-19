@@ -405,8 +405,9 @@ local function main()
 
             local timer = time.timer()
             fs.mkdir_p(fs.dirname(CONFIG.history_file))
-            fs.write_all(CONFIG.history_file, binser.serialize(history))
-            print("Dumped history to " .. CONFIG.history_file .. " in " .. timer() .. " ms")
+            local content = binser.serialize(history)
+            fs.write_all(CONFIG.history_file, content)
+            print("Dumped " .. #content .. " bytes of history to " .. CONFIG.history_file .. " in " .. timer() .. " ms")
         end
 
         if dirty then
