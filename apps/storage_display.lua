@@ -59,11 +59,7 @@ end
 
 DBEntry = class("DBEntry")
 binser.registerClass(DBEntry)
-DBEntry._template = {
-    "count",
-    "storage_capacity",
-    item_type = {"name", "max"}
-}
+DBEntry._template = {"count", "storage_capacity", "item_type_index"}
 function DBEntry:initialize(o)
     self.item_type_index = o.item_type_index
     self.count = 0
