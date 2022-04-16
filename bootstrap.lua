@@ -1,4 +1,4 @@
-BOOTSTRAP_APP = {"apps/storage_display", "feef1bc"} -- Update this for the location / commit of the app you want to run on this computer
+BOOTSTRAP_APP = {"apps/storage_display", "d2c3e03"} -- Update this for the location / commit of the app you want to run on this computer
 DEPS_DISK_UUID = nil -- Replace this with the disk UUID to use for the dependency cache if you have more than one disks in the system
 BOOTSTRAP_REPO = "AlexanderJohnston/ficsit-appliances"
 DEPS_COMMIT = "b15e1c6"
@@ -49,14 +49,9 @@ local function _bootstrap()
 
     -- Run the app
     local target, version = table.unpack(BOOTSTRAP_APP)
-    if version == nil then
-        print("[bootstrap] Loading: " .. target)
-        local app = Deps(target)
-    else
-        print("[bootstrap] Loading: " .. target .. " @ " .. version)
-        local app = Deps(target, version)
-    end
-    print("[bootstrap] Starting: " .. target)
+    print("[bootstrap] Loading: " .. target .. " @ " .. version)
+    local app = Deps(target, version)
+    print("[bootstrap] Starting: " .. target .. " @ " .. version)
     app()
 end
 _bootstrap()
