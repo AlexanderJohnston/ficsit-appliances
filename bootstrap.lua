@@ -49,9 +49,14 @@ local function _bootstrap()
 
     -- Run the app
     local target, version = table.unpack(BOOTSTRAP_APP)
-    print("[bootstrap] Loading: " .. target .. " @ " .. version)
-    local app = Deps(target, version)
-    print("[bootstrap] Starting: " .. target .. " @ " .. version)
+    if version == nil then
+        print("[bootstrap] Loading: " .. target)
+        local app = Deps(target)
+    else
+        print("[bootstrap] Loading: " .. target .. " @ " .. version)
+        local app = Deps(target, version)
+    end
+    print("[bootstrap] Starting: " .. target)
     app()
 end
 _bootstrap()

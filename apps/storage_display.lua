@@ -330,7 +330,7 @@ end
 local function main()
     local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     print("yo")
-    print(containers[0], containers[1], containers[2])
+    print(containers[0]:getInventories()[1], containers[1]:getInventories()[1], containers[2]:getInventories()[0])
     local gpu = hw.gpu()
     local main_display = component.proxy(CONFIG.main_display)
 
