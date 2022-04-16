@@ -1,6 +1,6 @@
 --- Load libraries from the internets with caching to disk
-local USER_AGENT = "Ficsit-Appliances/Deps https://github.com/abesto/ficsit-appliances"
-local REPOSITORY = "abesto/ficsit-appliances"
+local USER_AGENT = "Ficsit-Appliances/Deps https://github.com/AlexanderJohnston/ficsit-appliances"
+local REPOSITORY = "AlexanderJohnston/ficsit-appliances"
 
 local function pci(cls)
     local device = computer.getPCIDevices(findClass(cls))[1]
