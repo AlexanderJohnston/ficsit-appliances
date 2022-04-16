@@ -1,4 +1,4 @@
-BOOTSTRAP_APP = {"apps/storage_display", "91be7b2"} -- Update this for the location / commit of the app you want to run on this computer
+BOOTSTRAP_APP = {"apps/storage_display", "feef1bc"} -- Update this for the location / commit of the app you want to run on this computer
 DEPS_DISK_UUID = nil -- Replace this with the disk UUID to use for the dependency cache if you have more than one disks in the system
 BOOTSTRAP_REPO = "AlexanderJohnston/ficsit-appliances"
 DEPS_COMMIT = "b15e1c6"
