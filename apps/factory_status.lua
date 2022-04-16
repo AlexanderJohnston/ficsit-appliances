@@ -6,7 +6,7 @@ local TablePrinter = Deps("lib/table_printer")
 local colors = Deps("lib/colors")
 
 CONFIG = CONFIG or {
-    main_display = "MainScreen"
+    main_display = "B30FFA3B4A2C637F57090F9AEE462061"
 }
 
 local EntryBuilder = class("EntryBuilder")
