@@ -328,7 +328,7 @@ local function save_history(registry, history)
 end
 
 local function main()
-    local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk1_C")))
+    local containers = component.proxy(component.findComponent(findClass("Build_StorageContainerMk2_C")))
     print("yo")
     print(containers[0], containers[1])
     local gpu = hw.gpu()
