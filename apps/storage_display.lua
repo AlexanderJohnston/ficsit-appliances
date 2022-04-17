@@ -8,7 +8,7 @@ local TablePrinter = Deps("lib/table_printer")
 local colors = Deps("lib/colors")
 
 CONFIG = CONFIG or {
-    main_display = "31F4C5EE4E921124586B399B57E7196D",
+    main_display = "6A9A1DD24B1F9A1F61C0E9B423AF4F68",
     history_file = "/storage_display/history.binser",
     retention = 650,
     frequency = 25,
