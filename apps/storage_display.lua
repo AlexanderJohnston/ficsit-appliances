@@ -8,6 +8,7 @@ local TablePrinter = Deps("lib/table_printer")
 local colors = Deps("lib/colors")
 local DB = Deps("lib/database")
 local History = Deps("lib/history")
+local DBEntry = Deps("lib/database_entry")
 
 CONFIG = CONFIG or {
     entries = {},
