@@ -170,7 +170,6 @@ local function main()
     end
     if history == nil then
         history = History:new{
-            entries = {},
             retention = CONFIG.retention,
             frequency = CONFIG.frequency
         }
