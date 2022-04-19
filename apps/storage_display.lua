@@ -10,7 +10,7 @@ local DB = Deps("lib/database")
 local History = Deps("lib/history")
 
 CONFIG = CONFIG or {
-    entries = {}
+    entries = {},
     main_display = "MainScreen",
     history_file = "/storage_display/history.binser",
     retention = 650,
