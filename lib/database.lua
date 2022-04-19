@@ -8,13 +8,12 @@ function Database:initialize()
 end
 
 function Database:entry(item_type)
-    local registry = self.registry:register(item_type)
+    local item_type_index = self.registry:register(item_type)
     if self.registry.entries[item_type_index] == nil then
         self.registry.entries[item_type_index] = database_entry:new{
             item_type_index = item_type_index
         }
     end
-    self.registry = registry
     return self.registry.entries[item_type_index]
 end
 return Database
