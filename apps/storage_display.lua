@@ -202,7 +202,7 @@ local function main()
             e, s, x, y = event.pull(0)
         end
 
-        local time_to_next_snapshot = History:time_to_next_snapshot()
+        local time_to_next_snapshot = history:time_to_next_snapshot()
         if last_time_to_next_snapshot ~= time_to_next_snapshot then
             dirty = true
         end
