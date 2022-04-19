@@ -50,6 +50,10 @@ function History:rate_per_minute(item_type, duration)
 end
 
 function History:time_to_next_snapshot()
+    if self.entries == nil then
+        self.entries = {}
+        return 0
+    end
     if #self.entries == 0 then
         return 0
     end
