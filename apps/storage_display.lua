@@ -9,7 +9,7 @@ local colors = Deps("lib/colors")
 local DB = Deps("lib/database")
 local History = Deps("lib/history")
 
-CONFIG = CONFIG or {
+CONFIG = CONFIG or 
     main_display = "MainScreen",
     history_file = "/storage_display/history.binser",
     retention = 650,
@@ -170,6 +170,7 @@ local function main()
     end
     if history == nil then
         history = History:new{
+            entries = {}
             retention = CONFIG.retention,
             frequency = CONFIG.frequency
         }
