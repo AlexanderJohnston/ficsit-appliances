@@ -4,10 +4,10 @@ local DB = Deps("lib/database")
 local DBEntry = Deps("lib/database_entry")
 local HistoryEntry = Deps("lib/history_entry")
 local History = class("History")
-local entries = nil
+
 function History:initialize(o)
     o = o or {}
-    entries = o.entries or {}
+    self.entries = o.entries or {}
     self.retention = o.retention or CONFIG.retention
     self.frequency = o.frequency or CONFIG.frequency
 end
