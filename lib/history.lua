@@ -4,6 +4,10 @@ local DB = Deps("lib/database")
 local DBEntry = Deps("lib/database_entry")
 local HistoryEntry = Deps("lib/history_entry")
 local History = class("History")
+entries = {}
+retention = nil
+frequency = nil
+
 function History:initialize(o)
     o = o or {}
     self.entries = o.entries or {}
