@@ -173,6 +173,7 @@ local function main()
             retention = CONFIG.retention,
             frequency = CONFIG.frequency
         }
+        history.entries = {}
         print("Created new history")
     end
 
