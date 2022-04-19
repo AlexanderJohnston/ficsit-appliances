@@ -7,7 +7,7 @@ local hw = Deps("lib/hw")
 local TablePrinter = Deps("lib/table_printer")
 local colors = Deps("lib/colors")
 local DB = Deps("lib/database")
-local Histoiry = Deps("lib/history")
+local History = Deps("lib/history")
 
 CONFIG = CONFIG or {
     main_display = "MainScreen",
@@ -64,12 +64,12 @@ local function display(history, highlight, gpu, status)
         end
     end
 
-    local history_entry = history:last()
+    local history_entry = History:last()
     if history_entry ~= nil then
         local db = history_entry.db
         for _, entry in pairs(db.entries) do
             local fill_percent = entry:get_fill_percent()
-            local rate_longest = history:rate_per_minute(entry:item_type(), max_rate)
+            local rate_longest = History:rate_per_minute(entry:item_type(), max_rate)
             local color
             if fill_percent >= 99 then
                 color = colors.green
@@ -82,7 +82,7 @@ local function display(history, highlight, gpu, status)
             end
             local cells = {entry:item_type().name, entry.count, entry.storage_capacity, entry:get_fill_percent()}
             for _, rate in pairs(CONFIG.rates) do
-                table.insert(cells, string.format("%s/m", history:rate_per_minute(entry:item_type(), rate[2])))
+                table.insert(cells, string.format("%s/m", History:rate_per_minute(entry:item_type(), rate[2])))
             end
             table_printer:insert(color, cells)
         end
@@ -103,7 +103,7 @@ local function snapshot(history, containers)
     for _, container in pairs(containers) do
         count_items(db, container)
     end
-    history:record(db, timer())
+    History:record(db, timer())
 end
 
 local function highlight_changed(old, new)
@@ -123,7 +123,7 @@ local function load_history()
 
     timer = time.timer()
     local registry, history = binser.deserializeN(content, 2)
-    print("Deserialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
+    print("Deserialized history with " .. History:size() .. " entries in " .. timer() .. "ms")
 
     return registry, history
 end
@@ -132,7 +132,7 @@ local history_saving_coro = coroutine.create(function(registry, history)
     while true do
         local timer = time.timer()
         local content = binser.serialize(registry, history)
-        print("Serialized history with " .. history:size() .. " entries in " .. timer() .. "ms")
+        print("Serialized history with " .. History:size() .. " entries in " .. timer() .. "ms")
 
         timer = time.timer()
         fs.mkdir_p(fs.dirname(CONFIG.history_file))
@@ -202,7 +202,7 @@ local function main()
             e, s, x, y = event.pull(0)
         end
 
-        local time_to_next_snapshot = history:time_to_next_snapshot()
+        local time_to_next_snapshot = History:time_to_next_snapshot()
         if last_time_to_next_snapshot ~= time_to_next_snapshot then
             dirty = true
         end
@@ -215,7 +215,7 @@ local function main()
 
         if dirty then
             local status = string.format("Last update %ss ago (took %sms). Next update in %ss or on click.",
-                history:last():age(), history:last().duration, time_to_next_snapshot)
+                History:last():age(), History:last().duration, time_to_next_snapshot)
             display(history, last_highlight, gpu, status)
         end
     end
