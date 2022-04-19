@@ -16,3 +16,4 @@ function Database:entry(item_type)
     end
     return self.entries[item_type_index]
 end
+return Database
