@@ -4,7 +4,7 @@ local database_entry  = Deps("lib/database_entry")
 
 local Database = class("Database")
 function Database:initialize()
-    self.registry = {}
+    self.registry = item_type_registry:new()
 end
 
 function Database:entry(item_type)
